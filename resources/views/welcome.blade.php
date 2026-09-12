@@ -29,7 +29,7 @@
             <div class="wl-fallback-note">
                 <strong>AniLink</strong> — Cultivating Connection, Harvesting Fair Trades.<br /><br />
                 The web assets aren’t built yet. Run <code>npm install &amp;&amp; npm run build</code>,
-                then refresh this page. Meanwhile: <a href="/manage">AniManage (farmers)</a> · <a href="/admin">Admin console</a>
+                then refresh this page. Meanwhile: <a href="/shop">AniMarket</a> · <a href="/manage">AniManage (farmers)</a> · <a href="/admin">Admin console</a>
             </div>
         @endunless
 
@@ -44,9 +44,10 @@
                     </span>
                 </a>
                 <nav class="flex items-center gap-2 sm:gap-3 text-sm">
-                    <a href="/manage" class="hidden sm:inline-flex h-9 items-center px-3 rounded-full font-medium text-[#2E5339] hover:bg-[#E8F0E9] transition">For farmers</a>
-                    <a href="/admin" class="hidden sm:inline-flex h-9 items-center px-3 rounded-full font-medium text-[#5C5C5C] hover:bg-[#FAF8F3] transition">Admin</a>
-                    <a href="/manage" class="inline-flex h-10 items-center px-4 rounded-full bg-[#2E5339] text-white font-semibold hover:bg-[#24412D] transition shadow-[0_4px_12px_rgba(46,83,57,0.18)]">Open AniManage</a>
+                    <a href="/shop" class="inline-flex h-9 items-center px-3 rounded-full font-medium text-[#2E5339] hover:bg-[#E8F0E9] transition">Shop</a>
+                    <a href="/manage" class="hidden sm:inline-flex h-9 items-center px-3 rounded-full font-medium text-[#5C5C5C] hover:bg-[#FAF8F3] transition">For farmers</a>
+                    <a href="/admin" class="hidden md:inline-flex h-9 items-center px-3 rounded-full font-medium text-[#5C5C5C] hover:bg-[#FAF8F3] transition">Admin</a>
+                    <a href="/shop" class="inline-flex h-10 items-center px-4 rounded-full bg-[#D4A017] text-[#1A1A1A] font-semibold hover:brightness-105 transition shadow-[0_4px_12px_rgba(212,160,23,0.25)]">Open AniMarket</a>
                 </nav>
             </div>
         </header>
@@ -68,13 +69,16 @@
                     </p>
 
                     <div class="mt-7 flex flex-wrap items-center gap-3">
-                        <a href="/manage" class="inline-flex h-12 items-center px-6 rounded-full bg-[#2E5339] text-white font-semibold hover:bg-[#24412D] transition shadow-[0_4px_12px_rgba(46,83,57,0.18)]">
-                            Sign in as Farmer
+                        <a href="/shop" class="inline-flex h-12 items-center px-6 rounded-full bg-[#2E5339] text-white font-semibold hover:bg-[#24412D] transition shadow-[0_4px_12px_rgba(46,83,57,0.18)]">
+                            Shop the market
                         </a>
-                        <a href="/admin" class="inline-flex h-12 items-center px-6 rounded-full bg-white border border-[#E8E2D6] font-semibold hover:bg-white/60 hover:border-[#2E5339]/30 transition">
-                            Admin console
+                        <a href="/manage" class="inline-flex h-12 items-center px-6 rounded-full bg-white border border-[#E8E2D6] font-semibold hover:bg-white/60 hover:border-[#2E5339]/30 transition">
+                            Sell your harvest
                         </a>
                     </div>
+                    <p class="mt-3 text-xs text-[#8A8A8A]">
+                        New buyer? <a href="/shop/register" class="text-[#2E5339] font-semibold underline">Create a free account</a> — or shop in the AniLink mobile app.
+                    </p>
 
                     {{-- Trust signals — visible, not intrusive --}}
                     <ul class="mt-8 flex flex-wrap gap-2 text-xs font-medium">
@@ -106,7 +110,7 @@
                                 <div class="text-lg font-semibold text-[#2E5339] leading-tight">₱35.00 <span class="text-xs font-medium text-[#8A8A8A]">/ kg</span></div>
                                 <div class="text-xs text-[#8A8A8A] truncate">Lito’s Farm · Brgy. San Isidro ✓ Verified</div>
                             </div>
-                            <button type="button" class="w-11 h-11 shrink-0 rounded-full bg-[#2E5339] text-white text-xl font-semibold hover:bg-[#24412D] transition" aria-label="Add to basket">+</button>
+                            <a href="/shop" class="w-11 h-11 shrink-0 rounded-full bg-[#2E5339] text-white text-xl font-semibold grid place-items-center hover:bg-[#24412D] transition" aria-label="Open AniMarket">+</a>
                         </div>
 
                         {{-- Order status chips + stepper preview --}}
@@ -128,26 +132,75 @@
                 </div>
             </section>
 
+            {{-- ===== Live market stats — real numbers from the database ===== --}}
+            <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
+                <div class="bg-[#2E5339] rounded-[16px] text-white p-6 sm:p-8 grid grid-cols-2 lg:grid-cols-4 gap-6 shadow-[0_8px_24px_rgba(46,83,57,0.18)]">
+                    <div>
+                        <div class="text-3xl font-semibold">{{ number_format($liveListings) }}</div>
+                        <div class="text-sm text-white/70 mt-1">harvest{{ $liveListings === 1 ? '' : 's' }} on the market now</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-semibold">{{ number_format($verifiedFarms) }}</div>
+                        <div class="text-sm text-white/70 mt-1">verified farm{{ $verifiedFarms === 1 ? '' : 's' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-semibold">{{ number_format($farms) }}</div>
+                        <div class="text-sm text-white/70 mt-1">farmer{{ $farms === 1 ? '' : 's' }} on AniLink</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-semibold">{{ number_format($ordersDelivered) }}</div>
+                        <div class="text-sm text-white/70 mt-1">order{{ $ordersDelivered === 1 ? '' : 's' }} delivered</div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- ===== Doorways — one entry per role ===== --}}
+            <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
+                <h2 class="text-xl font-semibold tracking-tight">Pick your doorway</h2>
+                <p class="text-sm text-[#5C5C5C] mt-1">Same marketplace, same accounts — on the web and in the AniLink mobile app.</p>
+
+                <div class="mt-6 grid md:grid-cols-3 gap-4">
+                    <a href="/shop" class="group bg-white rounded-[12px] border border-[#E8E2D6] p-6 shadow-[0_4px_12px_rgba(46,83,57,0.06)] hover:border-[#2E5339]/40 hover:shadow-[0_8px_20px_rgba(46,83,57,0.12)] transition">
+                        <div class="w-10 h-10 rounded-xl bg-[#E8F0E9] grid place-items-center text-xl" aria-hidden="true">🛒</div>
+                        <h3 class="mt-3 font-semibold">I’m buying</h3>
+                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Browse fresh harvests from verified farms, order retail or bulk, and track every step. Free account.</p>
+                        <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#2E5339]">Open AniMarket <span class="group-hover:translate-x-0.5 transition">→</span></span>
+                    </a>
+                    <a href="/manage" class="group bg-white rounded-[12px] border border-[#E8E2D6] p-6 shadow-[0_4px_12px_rgba(46,83,57,0.06)] hover:border-[#2E5339]/40 hover:shadow-[0_8px_20px_rgba(46,83,57,0.12)] transition">
+                        <div class="w-10 h-10 rounded-xl bg-[#E8F0E9] grid place-items-center text-xl" aria-hidden="true">🧑‍🌾</div>
+                        <h3 class="mt-3 font-semibold">I’m farming</h3>
+                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">List harvests in seconds, manage stock with one-tap steppers, and advance orders from pending to delivered.</p>
+                        <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#2E5339]">Open AniManage <span class="group-hover:translate-x-0.5 transition">→</span></span>
+                    </a>
+                    <a href="/admin" class="group bg-white rounded-[12px] border border-[#E8E2D6] p-6 shadow-[0_4px_12px_rgba(46,83,57,0.06)] hover:border-[#2E5339]/40 hover:shadow-[0_8px_20px_rgba(46,83,57,0.12)] transition">
+                        <div class="w-10 h-10 rounded-xl bg-[#FFF4D6] grid place-items-center text-xl" aria-hidden="true">🛡️</div>
+                        <h3 class="mt-3 font-semibold">I’m with the cooperative</h3>
+                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Review farm verifications, moderate listings, and watch the marketplace from the admin console.</p>
+                        <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#2E5339]">Open Admin <span class="group-hover:translate-x-0.5 transition">→</span></span>
+                    </a>
+                </div>
+            </section>
+
             {{-- ===== What's inside ===== --}}
             <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
                 <h2 class="text-xl font-semibold tracking-tight">One cooperative, four tools</h2>
-                <p class="text-sm text-[#5C5C5C] mt-1">Everything runs on the same Laravel API — the mobile app in your pocket, the web dashboards at your desk.</p>
+                <p class="text-sm text-[#5C5C5C] mt-1">Everything runs on the same secure Laravel API — in your pocket and at your desk.</p>
 
                 <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white rounded-[12px] border border-[#E8E2D6] p-5 shadow-[0_4px_12px_rgba(46,83,57,0.06)]">
                         <div class="w-10 h-10 rounded-xl bg-[#E8F0E9] grid place-items-center text-xl" aria-hidden="true">🥬</div>
                         <h3 class="mt-3 font-semibold">AniMarket</h3>
-                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Browse fresh harvests from verified farmers near you, sorted by freshest pick first.</p>
+                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Shop fresh harvests on the web or in the app — sorted by freshest pick, delivered or picked up.</p>
                     </div>
                     <div class="bg-white rounded-[12px] border border-[#E8E2D6] p-5 shadow-[0_4px_12px_rgba(46,83,57,0.06)]">
                         <div class="w-10 h-10 rounded-xl bg-[#E8F0E9] grid place-items-center text-xl" aria-hidden="true">🧺</div>
                         <h3 class="mt-3 font-semibold">AniManage</h3>
-                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Farmers track stock with one-tap steppers and advance orders from pending to delivered.</p>
+                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Farmers track stock with one-tap steppers and advance orders from pending to delivered — web and mobile.</p>
                     </div>
                     <div class="bg-white rounded-[12px] border border-[#E8E2D6] p-5 shadow-[0_4px_12px_rgba(46,83,57,0.06)]">
                         <div class="w-10 h-10 rounded-xl bg-[#E8F0E9] grid place-items-center text-xl" aria-hidden="true">🛡️</div>
                         <h3 class="mt-3 font-semibold">Trust &amp; safety</h3>
-                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Admin-verified farmer badges, 2FA-secured accounts, and a full history for every order.</p>
+                        <p class="mt-1 text-sm text-[#5C5C5C] leading-6">Admin-verified farmer badges, 2FA on every sensitive account, and a full history for every order.</p>
                     </div>
                     <div class="bg-white rounded-[12px] border border-[#E8E2D6] p-5 shadow-[0_4px_12px_rgba(46,83,57,0.06)]">
                         <div class="w-10 h-10 rounded-xl bg-[#FFF4D6] grid place-items-center text-xl" aria-hidden="true">📈</div>
@@ -193,6 +246,8 @@
             <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-[#8A8A8A]">
                 <p>© {{ date('Y') }} AniLink Cooperative — Cultivating Connection, Harvesting Fair Trades.</p>
                 <nav class="flex items-center gap-4">
+                    <a href="/shop" class="hover:text-[#2E5339] transition">AniMarket</a>
+                    <a href="/shop/register" class="hover:text-[#2E5339] transition">Register</a>
                     <a href="/manage" class="hover:text-[#2E5339] transition">AniManage</a>
                     <a href="/admin" class="hover:text-[#2E5339] transition">Admin</a>
                 </nav>
