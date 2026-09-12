@@ -4,10 +4,18 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\TransientToken;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureTwoFactorVerified
 {
+    /**
+     * Requires the current token to explicitly carry the 2fa:verified ability once
+     * the user has enabled 2FA (the * wildcard is deliberately not accepted, so
+     * tokens issued before 2FA was enabled are blocked). This also blocks pending
+     * (pre-OTP) login tokens. Routes that must stay reachable with those tokens
+     * (2FA management, 2FA verify, logout, me) are mounted outside this middleware.
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
@@ -16,31 +24,24 @@ class EnsureTwoFactorVerified
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        // If user has 2FA enabled, require that current token was issued after 2FA verification
-        // We use a simple approach: tokens created via 2FA verification have ability `2fa:verified`
-        // Alternatively, check session flag. For Sanctum PATs we check token abilities.
-        if ($user->two_factor_enabled) {
-            $token = $user->currentAccessToken();
-            if ($token && ! $token->can('2fa:verified') && ! $token->can('*')) {
-                // If token does not have 2fa:verified, block access for farmers (enforced)
-                // For non-farmer with 2FA enabled we also enforce
-                return response()->json([
-                    'message' => 'Two-factor authentication required. Please verify OTP.',
-                    'two_factor_required' => true,
-                ], 403);
-            }
-        }
+        $token = $user->currentAccessToken();
 
-        // Enforce for farmers even if not yet enabled: force setup
-        if ($user->isFarmer() && ! $user->two_factor_enabled) {
-            // Allowlist: permit 2FA setup endpoints without this middleware
-            // This middleware should only be applied to protected farmer routes where 2FA must be done
+        if ($user->two_factor_enabled && ! $this->isVerifiedToken($token)) {
             return response()->json([
-                'message' => 'Farmers must enable two-factor authentication.',
-                'two_factor_setup_required' => true,
+                'message' => 'Two-factor authentication required. Please verify OTP.',
+                'two_factor_required' => true,
             ], 403);
         }
 
         return $next($request);
+    }
+
+    private function isVerifiedToken(mixed $token): bool
+    {
+        if ($token instanceof TransientToken) {
+            return true; // stateful web session
+        }
+
+        return is_array($token?->abilities) && in_array('2fa:verified', $token->abilities, true);
     }
 }

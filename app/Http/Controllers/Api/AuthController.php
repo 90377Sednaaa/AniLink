@@ -24,7 +24,7 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Password::min(8)],
-            'role' => ['required', 'in:farmer,buyer_individual,buyer_business,admin'],
+            'role' => ['required', 'in:farmer,buyer_individual,buyer_business'],
             // Farmer specific
             'farm_name' => ['nullable', 'string', 'max:255'],
             'barangay' => ['nullable', 'string', 'max:255'],
@@ -35,12 +35,7 @@ class AuthController extends Controller
             'delivery_address' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Prevent self-registration as admin unless explicitly allowed (for now allow but log warning)
-        if ($validated['role'] === User::ROLE_ADMIN) {
-            // In production you would restrict this to seeded admins only
-            // For demo we allow it but could be guarded
-        }
-
+        // Admin accounts are seeded only — never self-registered
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],

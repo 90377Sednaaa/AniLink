@@ -35,13 +35,14 @@ class ProductController extends Controller
 
         $query = Product::query()
             ->with(['farmer.farmerProfile', 'category', 'images'])
+            ->withCount('orderItems')
             ->where('status', $request->get('status', 'available'));
 
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('category', fn($c) => $c->where('name', 'like', "%{$search}%"));
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('category', fn ($c) => $c->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -61,14 +62,20 @@ class ProductController extends Controller
         // Location filters via farmerProfile
         if ($request->filled('province') || $request->filled('municipality') || $request->filled('barangay')) {
             $query->whereHas('farmer.farmerProfile', function ($q) use ($request) {
-                if ($request->filled('province')) $q->where('province', $request->province);
-                if ($request->filled('municipality')) $q->where('municipality', $request->municipality);
-                if ($request->filled('barangay')) $q->where('barangay', $request->barangay);
+                if ($request->filled('province')) {
+                    $q->where('province', $request->province);
+                }
+                if ($request->filled('municipality')) {
+                    $q->where('municipality', $request->municipality);
+                }
+                if ($request->filled('barangay')) {
+                    $q->where('barangay', $request->barangay);
+                }
             });
         }
 
         if ($request->boolean('verified_only')) {
-            $query->whereHas('farmer.farmerProfile', fn($q) => $q->where('verification_status', 'approved'));
+            $query->whereHas('farmer.farmerProfile', fn ($q) => $q->where('verification_status', 'approved'));
         }
 
         // Sorting per spec: freshness (harvest_date), distance (farmer location), price
@@ -77,9 +84,9 @@ class ProductController extends Controller
             'price_low' => $query->orderBy('price_per_unit', 'asc'),
             'price_high' => $query->orderBy('price_per_unit', 'desc'),
             'distance' => $query->join('farmer_profiles', 'farmer_profiles.user_id', '=', 'products.farmer_id')
-                                 ->orderBy('farmer_profiles.municipality', 'asc')
-                                 ->orderBy('products.created_at', 'desc')
-                                 ->select('products.*'),
+                ->orderBy('farmer_profiles.municipality', 'asc')
+                ->orderBy('products.created_at', 'desc')
+                ->select('products.*'),
             default => $query->orderBy('harvest_date', 'desc')->orderBy('created_at', 'desc'), // fresh
         };
 
@@ -87,14 +94,19 @@ class ProductController extends Controller
         $products = $query->paginate($perPage)->appends($request->query());
 
         // Transform to AniMarket shape expected by React Native
-        $products->getCollection()->transform(fn(Product $p) => $this->transformProduct($p));
+        $products->getCollection()->transform(fn (Product $p) => $this->transformProduct($p));
 
         return response()->json($products);
     }
 
     public function show(Product $product)
     {
-        $product->load(['farmer.farmerProfile', 'category', 'images']);
+        // Archived listings are removed from discovery and detail
+        if ($product->status === 'archived') {
+            abort(404);
+        }
+        $product->load(['farmer.farmerProfile', 'category', 'images'])->loadCount('orderItems');
+
         return response()->json(['data' => $this->transformProduct($product, true)]);
     }
 
@@ -111,7 +123,7 @@ class ProductController extends Controller
             'unit_type' => ['required', 'string', 'in:kg,sack,piece,bundle,bag,box'],
             'price_per_unit' => ['required', 'numeric', 'min:0'],
             'available_quantity' => ['required', 'numeric', 'min:0'],
-            'min_bulk_quantity' => ['nullable', 'numeric', 'min:1'],
+            'min_bulk_quantity' => ['nullable', 'numeric', 'min:1', 'required_with:bulk_price'],
             'bulk_price' => ['nullable', 'numeric', 'min:0', 'required_with:min_bulk_quantity'],
             'harvest_date' => ['nullable', 'date', 'before_or_equal:today'],
             'status' => ['nullable', 'in:available,sold_out,archived'],
@@ -148,6 +160,7 @@ class ProductController extends Controller
         });
 
         $product->load(['farmer.farmerProfile', 'category', 'images']);
+
         return response()->json(['message' => 'Product listed.', 'data' => $this->transformProduct($product)], 201);
     }
 
@@ -165,8 +178,8 @@ class ProductController extends Controller
             'unit_type' => ['sometimes', 'string', 'in:kg,sack,piece,bundle,bag,box'],
             'price_per_unit' => ['sometimes', 'numeric', 'min:0'],
             'available_quantity' => ['sometimes', 'numeric', 'min:0'],
-            'min_bulk_quantity' => ['nullable', 'numeric', 'min:1'],
-            'bulk_price' => ['nullable', 'numeric', 'min:0'],
+            'min_bulk_quantity' => ['nullable', 'numeric', 'min:1', 'required_with:bulk_price'],
+            'bulk_price' => ['nullable', 'numeric', 'min:0', 'required_with:min_bulk_quantity'],
             'harvest_date' => ['nullable', 'date', 'before_or_equal:today'],
             'status' => ['sometimes', 'in:available,sold_out,archived'],
         ]);
@@ -192,16 +205,18 @@ class ProductController extends Controller
         }
 
         $product->load(['farmer.farmerProfile', 'category', 'images']);
+
         return response()->json(['message' => 'Product updated.', 'data' => $this->transformProduct($product)]);
     }
 
     /**
-     * DELETE /api/products/{product} — soft archive per spec (status archived) + inventory log
+     * DELETE /api/products/{product} — soft archive per spec (status archived, kept for order history)
      */
     public function destroy(Request $request, Product $product)
     {
         $this->authorizeOwner($request, $product);
         $product->update(['status' => 'archived']);
+
         return response()->json(['message' => 'Product archived.']);
     }
 
@@ -211,10 +226,12 @@ class ProductController extends Controller
     public function myProducts(Request $request)
     {
         $products = Product::with(['category', 'images'])
+            ->withCount('orderItems')
             ->where('farmer_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-        $products->getCollection()->transform(fn($p) => $this->transformProduct($p));
+        $products->getCollection()->transform(fn ($p) => $this->transformProduct($p));
+
         return response()->json($products);
     }
 
@@ -230,8 +247,11 @@ class ProductController extends Controller
         ]);
 
         $product->available_quantity = max(0, $product->available_quantity + $validated['change_amount']);
-        if ($product->available_quantity == 0) $product->status = 'sold_out';
-        elseif ($product->status === 'sold_out' && $product->available_quantity > 0) $product->status = 'available';
+        if ($product->available_quantity == 0) {
+            $product->status = 'sold_out';
+        } elseif ($product->status === 'sold_out' && $product->available_quantity > 0) {
+            $product->status = 'available';
+        }
         $product->save();
 
         InventoryLog::create([
@@ -270,7 +290,7 @@ class ProductController extends Controller
             'harvest_date' => $p->harvest_date?->format('Y-m-d'),
             'status' => $p->status,
             'image' => $primaryImage ? Storage::disk('public')->url($primaryImage->image_path) : null,
-            'images' => $p->images->map(fn($img) => ['id' => $img->id, 'url' => Storage::disk('public')->url($img->image_path), 'is_primary' => (bool) $img->is_primary]),
+            'images' => $p->images->map(fn ($img) => ['id' => $img->id, 'url' => Storage::disk('public')->url($img->image_path), 'is_primary' => (bool) $img->is_primary]),
             'farmer' => $farmer ? [
                 'id' => $farmer->id,
                 'name' => $farmer->name,
@@ -282,13 +302,14 @@ class ProductController extends Controller
                 'verification_status' => $profile?->verification_status,
                 'distance_km' => null, // Filled by client or future geo; distance sort uses municipality alphabetical for now
             ] : null,
-            'rating' => 4.7,
-            'reviews' => $p->orderItems()->count(),
+            'rating' => 4.7, // placeholder until per-farmer reviews are surfaced on listings
+            'reviews' => $p->order_items_count ?? $p->orderItems()->count(),
             'created_at' => $p->created_at,
         ];
         if ($detailed) {
             $base['inventory_logs_count'] = $p->inventoryLogs()->count();
         }
+
         return $base;
     }
 }

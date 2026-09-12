@@ -49,10 +49,18 @@ class TwoFactorController extends Controller
 
         $user->update([
             'two_factor_enabled' => true,
-            'two_factor_secret' => encrypt($request->code . '|' . now()->timestamp), // placeholder secret; use pragmarx/google2fa in prod
+            'two_factor_secret' => encrypt($request->code.'|'.now()->timestamp), // placeholder secret; use pragmarx/google2fa in prod
         ]);
 
-        return response()->json(['message' => 'Two-factor enabled successfully.', 'user' => $user->fresh()]);
+        // The token used to enable 2FA lacks the 2fa:verified ability — swap it for a verified one
+        $user->currentAccessToken()?->delete();
+        $token = $user->createToken('auth-token', ['*', '2fa:verified'])->plainTextToken;
+
+        return response()->json([
+            'message' => 'Two-factor enabled successfully.',
+            'user' => $user->fresh(),
+            'token' => $token,
+        ]);
     }
 
     public function disable(Request $request)
