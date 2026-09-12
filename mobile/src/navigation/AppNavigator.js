@@ -15,6 +15,10 @@ import InventoryScreen from '../screens/InventoryScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import PredictPlaceholder from '../screens/PredictPlaceholder';
 import ProfilePlaceholder from '../screens/ProfilePlaceholder';
+import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
+import AdminVerificationsScreen from '../screens/admin/AdminVerificationsScreen';
+import AdminListingsScreen from '../screens/admin/AdminListingsScreen';
+import AdminUsersScreen from '../screens/admin/AdminUsersScreen';
 import { useAuth } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
@@ -22,7 +26,7 @@ const RootStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabIcon({ label, focused }) {
-  const icons = { Home: '⌂', Orders: '≡', Inventory: '▦', Predict: '◈', Profile: '○' };
+  const icons = { Home: '⌂', Orders: '≡', Inventory: '▦', Predict: '◈', Profile: '○', Admin: '★' };
   return (
     <View style={{ alignItems: 'center', gap: 2 }}>
       <View style={{
@@ -60,9 +64,22 @@ function HomeStack() {
   );
 }
 
+// Admin-only section — same app, extra tab per role (moderation, verification, analytics)
+function AdminStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+      <Stack.Screen name="AdminVerifications" component={AdminVerificationsScreen} />
+      <Stack.Screen name="AdminListings" component={AdminListingsScreen} />
+      <Stack.Screen name="AdminUsers" component={AdminUsersScreen} />
+    </Stack.Navigator>
+  );
+}
+
 function Tabs() {
   const { user } = useAuth();
   const isFarmer = user?.role === 'farmer';
+  const isAdmin = user?.role === 'admin';
   return (
     <Tab.Navigator
       screenOptions={{
@@ -82,6 +99,9 @@ function Tabs() {
           tabBarBadge: undefined,
         }}
       />
+      {isAdmin && (
+        <Tab.Screen name="AdminTab" component={AdminStack} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Admin" focused={focused} /> }} />
+      )}
       <Tab.Screen name="ProfileTab" component={ProfilePlaceholder} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Profile" focused={focused} /> }} />
     </Tab.Navigator>
   );
