@@ -41,7 +41,7 @@ export default function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword loginPath="/shop/login" />} />
+              <Route path="/forgot-password" element={<ForgotPassword loginPath="/login" />} />
               <Route path="/" element={<Layout><Browse /></Layout>} />
               <Route path="/products/:id" element={<Layout><ProductDetail /></Layout>} />
               <Route path="/cart" element={<Layout><Cart /></Layout>} />

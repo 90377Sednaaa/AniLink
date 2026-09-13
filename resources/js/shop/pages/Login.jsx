@@ -17,10 +17,12 @@ export default function Login() {
     try {
       if (pendingToken) {
         await verifyTwoFactor(code)
+        navgo('/')
       } else {
-        await login(form.email, form.password)
+        const res = await login(form.email, form.password)
+        if (res?.two_factor_required) return
+        navgo('/')
       }
-      navgo('/')
     } catch (err) {
       setError(err.message || 'Sign in failed')
     } finally {

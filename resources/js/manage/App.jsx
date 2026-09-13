@@ -25,7 +25,7 @@ export default function App() {
         <BrowserRouter basename="/manage">
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword loginPath="/manage/login" />} />
+            <Route path="/forgot-password" element={<ForgotPassword loginPath="/login" />} />
             <Route path="/" element={<RequireFarmer><Layout><Inventory /></Layout></RequireFarmer>} />
             <Route path="/orders" element={<RequireFarmer><Layout><Orders /></Layout></RequireFarmer>} />
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -83,9 +83,11 @@ class PredictTest extends TestCase
         $headers = ['Authorization' => "Bearer {$token}"];
 
         $this->withHeaders($headers)->patchJson("/api/orders/{$order->id}/status", ['status' => 'completed'])->assertOk();
-        // Admins bypass the transition map, so guard the hook itself against re-fires
+        // Admins bypass the transition map, so guard the hook itself against re-fires.
+        // Use actingAs (not withHeader) — default headers persist across calls on the
+        // same TestCase, so a second Bearer header would still authenticate as farmer.
         $admin = User::factory()->admin()->create();
-        $this->withHeader('Authorization', "Bearer {$admin->createToken('auth-token', ['*'])->plainTextToken}")
+        $this->actingAs($admin)
             ->patchJson("/api/orders/{$order->id}/status", ['status' => 'completed'])
             ->assertOk();
 

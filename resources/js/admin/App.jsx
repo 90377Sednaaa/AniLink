@@ -26,7 +26,7 @@ export default function App() {
         <BrowserRouter basename="/admin">
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword loginPath="/admin/login" />} />
+            <Route path="/forgot-password" element={<ForgotPassword loginPath="/login" />} />
             <Route path="/" element={<RequireAdmin><Layout><Analytics /></Layout></RequireAdmin>} />
             <Route path="/verifications" element={<RequireAdmin><Layout><Verifications /></Layout></RequireAdmin>} />
             <Route path="/listings" element={<RequireAdmin><Layout><Listings /></Layout></RequireAdmin>} />

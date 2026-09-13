@@ -45,7 +45,7 @@ export default function Reports() {
         {list.map(r => (
           <div key={r.id} className="bg-white rounded-[12px] border border-[#E8E2D6] p-5 shadow-[0_4px_12px_rgba(46,83,57,0.06)]">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold capitalize">{r.category.replace('_', ' ')}</span>
+              <span className="font-semibold capitalize">{(r.category || '').replace('_', ' ') || '—'}</span>
               <Chip tone={r.status === 'open' ? 'pending' : r.status === 'resolved' ? 'approved' : 'cancelled'}>{r.status}</Chip>
               {r.order && <span className="text-xs text-[#8A8A8A]">Order #{r.order.id}</span>}
               {r.reported_user && <span className="text-xs text-[#8A8A8A]">Against {r.reported_user.name} ({r.reported_user.role})</span>}

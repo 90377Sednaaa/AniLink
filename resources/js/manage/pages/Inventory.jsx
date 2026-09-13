@@ -35,7 +35,6 @@ export default function Inventory() {
   const categories = Array.isArray(cats) ? cats : (cats?.data ?? [])
 
   const products = prodRes?.data ?? prodRes ?? []
-  const orders = Array.isArray(ordersRes?.data) ? ordersRes.data : (ordersRes ?? [])
 
   const lowStock = dash?.low_stock ?? []
   const daily = dash?.sales?.today?.revenue ?? 0
@@ -61,7 +60,7 @@ export default function Inventory() {
   })
 
   const toggleSoldOut = useMutation({
-    mutationFn: ({ id, soldOut }) => soldOut ? api.updateProduct(id, { status: 'archived' }) : api.adjustStock(id, 10, 'restock'),
+    mutationFn: ({ id, soldOut }) => soldOut ? api.updateProduct(id, { status: 'sold_out' }) : api.adjustStock(id, 10, 'restock'),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['farmer-products'] }); qc.invalidateQueries({ queryKey: ['farmer-dashboard'] }) },
   })
 
@@ -252,7 +251,7 @@ export default function Inventory() {
                         {p.image ? <img src={p.image} alt={p.name} className="w-8 h-8 rounded-lg object-cover border border-[#E8E2D6] shrink-0" loading="lazy" /> : <span className="w-8 h-8 rounded-lg bg-[#E8F0E9] flex items-center justify-center text-sm shrink-0" aria-hidden="true">🥬</span>}
                         {p.name} {p.status === 'archived' && <Chip tone="archived" className="!py-0.5">Archived</Chip>}
                       </div>
-                      <div className="text-xs text-[#8A8A8A] mt-0.5">Harvest {p.harvest_date || '—'} · {p.status.replace('_', ' ')}</div>
+                      <div className="text-xs text-[#8A8A8A] mt-0.5">Harvest {p.harvest_date || '—'} · {(p.status || '').replace('_', ' ') || '—'}</div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-sm font-medium text-[#2E5339]">{fmtPeso(p.price_per_unit)} / {p.unit_type}</div>

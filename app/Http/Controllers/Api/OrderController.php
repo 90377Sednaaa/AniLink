@@ -225,23 +225,30 @@ class OrderController extends Controller
         }
 
         // Enforce valid transitions per spec flow: pending->confirmed->preparing->ready->delivered/completed
+        // Terminal states (cancelled/completed) have no outgoing transitions.
         $allowed = [
             'pending' => ['confirmed', 'cancelled'],
             'confirmed' => ['preparing', 'cancelled'],
             'preparing' => ['ready', 'cancelled'],
             'ready' => ['delivered', 'completed', 'cancelled'],
             'delivered' => ['completed'],
+            'cancelled' => [],
+            'completed' => [],
         ];
         $current = $order->status;
-        if (isset($allowed[$current]) && ! in_array($validated['status'], $allowed[$current], true) && ! $isAdmin) {
-            return response()->json(['message' => "Invalid transition from {$current} to {$validated['status']}. Allowed: ".implode(', ', $allowed[$current])], 422);
+        $allowedNext = $allowed[$current] ?? [];
+        if (! in_array($validated['status'], $allowedNext, true) && ! $isAdmin) {
+            $allowedLabel = $allowedNext ? implode(', ', $allowedNext) : 'none (terminal state)';
+
+            return response()->json(['message' => "Invalid transition from {$current} to {$validated['status']}. Allowed: {$allowedLabel}"], 422);
         }
 
         // If cancelling, restore stock
         if ($validated['status'] === 'cancelled' && $order->status !== 'cancelled') {
             $notifications = DB::transaction(function () use ($order, $user, $validated) {
+                $order->loadMissing('items');
                 foreach ($order->items as $item) {
-                    $product = Product::find($item->product_id);
+                    $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
                     if ($product) {
                         $product->available_quantity += $item->quantity;
                         if ($product->status === 'sold_out' && $product->available_quantity > 0) {
