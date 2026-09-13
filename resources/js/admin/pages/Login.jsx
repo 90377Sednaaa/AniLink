@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 
 export default function Login() {
@@ -54,6 +54,7 @@ export default function Login() {
           {err && <div className="rounded-xl bg-[#FDEDEC] border border-[#E8C6C6] p-3 text-sm text-[#B0413E]">{err}</div>}
           <button disabled={loading} className="w-full h-11 rounded-full bg-[#2E5339] text-white font-semibold hover:bg-[#24412D] disabled:opacity-60 transition">{loading ? 'Signing in…' : 'Sign in'}</button>
           <div className="text-xs text-[#8A8A8A] text-center">Demo account: admin@anilink.test / password123</div>
+          <div className="text-xs text-center"><Link to="/forgot-password" className="text-[#2E5339] font-semibold underline">Forgot password?</Link></div>
         </form>
       </div>
     </div>

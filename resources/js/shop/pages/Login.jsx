@@ -80,6 +80,8 @@ export default function Login() {
         {!pendingToken && (
           <p className="text-xs text-[#5C5C5C] mt-4 text-center">
             New here? <Link to="/register" className="text-[#2E5339] font-semibold underline">Create a buyer account</Link>
+            <span className="mx-1.5">·</span>
+            <Link to="/forgot-password" className="text-[#2E5339] font-semibold underline">Forgot password?</Link>
           </p>
         )}
       </div>

@@ -15,6 +15,7 @@ import InventoryScreen from '../screens/InventoryScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import PredictPlaceholder from '../screens/PredictPlaceholder';
 import ProfilePlaceholder from '../screens/ProfilePlaceholder';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import AdminVerificationsScreen from '../screens/admin/AdminVerificationsScreen';
 import AdminListingsScreen from '../screens/admin/AdminListingsScreen';
@@ -112,6 +113,7 @@ export default function AppNavigator() {
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       <RootStack.Screen name="Tabs" component={Tabs} />
       <RootStack.Screen name="Notifications" component={NotificationsScreen} options={{ presentation: 'card' }} />
+      <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ presentation: 'card' }} />
     </RootStack.Navigator>
   );
 }

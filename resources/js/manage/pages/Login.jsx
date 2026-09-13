@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 
 export default function Login() {
@@ -48,6 +48,7 @@ export default function Login() {
             <button type="button" onClick={()=>{setEmail('lito@anilink.test'); setPassword('password123')}} className="flex-1 h-9 rounded-full border border-[#E8E2D6] hover:bg-[#FAF8F3] transition truncate px-2">lito@anilink.test</button>
             <button type="button" onClick={()=>{setEmail('nena@anilink.test'); setPassword('password123')}} className="flex-1 h-9 rounded-full border border-[#E8E2D6] hover:bg-[#FAF8F3] transition truncate px-2">nena@anilink.test</button>
           </div>
+          <div className="text-xs text-center"><Link to="/forgot-password" className="text-[#2E5339] font-semibold underline">Forgot password?</Link></div>
         </form>
       </div>
     </div>
