@@ -4,11 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\FarmerProfile;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\PriceTrend;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AniMarketSeeder extends Seeder
 {
@@ -51,7 +53,7 @@ class AniMarketSeeder extends Seeder
                 'name' => $f['name'],
                 'password' => Hash::make('password123'),
                 'role' => 'farmer',
-                'phone' => '0917000000' . rand(10, 99),
+                'phone' => '0917000000'.rand(10, 99),
                 'is_verified' => true,
             ]);
             FarmerProfile::updateOrCreate(['user_id' => $user->id], [
@@ -61,7 +63,7 @@ class AniMarketSeeder extends Seeder
                 'province' => $f['province'],
                 'verification_status' => $f['verified'],
                 'verification_doc_path' => $f['doc'] ?? null,
-                'bio' => 'Smallholder farmer from ' . $f['municipality'],
+                'bio' => 'Smallholder farmer from '.$f['municipality'],
             ]);
             $farmerIds[] = $user->id;
         }
@@ -133,25 +135,25 @@ class AniMarketSeeder extends Seeder
         $biz = User::where('email', 'biz@anilink.test')->first();
         if ($buyer && Product::count() > 0) {
             // create only if no orders yet (avoid duplicates on reseed)
-            if (\App\Models\Order::count() === 0) {
+            if (Order::count() === 0) {
                 $productsList = Product::where('status', 'available')->take(3)->get();
                 foreach (range(1, 7) as $daysAgo) {
                     $date = now()->subDays($daysAgo);
                     $orderBuyer = $daysAgo % 2 === 0 ? $biz : $buyer;
                     $prod = $productsList[$daysAgo % $productsList->count()];
                     $qty = rand(1, 3);
-                    $order = \App\Models\Order::create([
+                    $order = Order::create([
                         'buyer_id' => $orderBuyer->id,
                         'farmer_id' => $prod->farmer_id,
                         'order_type' => $orderBuyer->role === 'buyer_business' && $qty >= 2 ? 'bulk' : 'retail',
-                        'status' => ['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'][array_rand(['pending','confirmed','preparing','ready','completed','cancelled'])],
-                        'fulfillment_type' => rand(0,1) ? 'delivery' : 'pickup',
-                        'total_amount' => $prod->price_per_unit * $qty + (rand(0,1) ? 45 : 0),
+                        'status' => ['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'][array_rand(['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'])],
+                        'fulfillment_type' => rand(0, 1) ? 'delivery' : 'pickup',
+                        'total_amount' => $prod->price_per_unit * $qty + (rand(0, 1) ? 45 : 0),
                         'delivery_address' => 'Brgy. San Isidro, Cabanatuan',
                         'created_at' => $date,
                         'updated_at' => $date,
                     ]);
-                    \App\Models\OrderItem::create([
+                    OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $prod->id,
                         'quantity' => $qty,
@@ -159,6 +161,61 @@ class AniMarketSeeder extends Seeder
                         'subtotal' => $prod->price_per_unit * $qty,
                     ]);
                 }
+            }
+        }
+
+        // ── AniPredict demo data ──
+        // 90 days of synthetic price history across provinces so trends and the
+        // regional comparison are alive on first run. Guarded against reseed dupes.
+        if (PriceTrend::count() === 0) {
+            $provinces = ['Nueva Ecija', 'Laguna', 'Quezon'];
+            $basePrices = ['gulay' => 62, 'prutas' => 90, 'bigas' => 52, 'isda' => 175, 'herbs' => 32];
+
+            foreach ($cats as $c) {
+                $category = Category::where('slug', $c['slug'])->first();
+                if (! $category) {
+                    continue;
+                }
+                $base = $basePrices[$c['slug']];
+                foreach (range(90, 0, -3) as $daysAgo) {
+                    foreach ($provinces as $pi => $province) {
+                        PriceTrend::create([
+                            'category_id' => $category->id,
+                            'region' => $province,
+                            // seasonal wobble + gentle upward drift + per-province offset + jitter
+                            'recorded_price' => round($base + sin($daysAgo / 9) * 6 + (90 - $daysAgo) * 0.12 + $pi * 4 + mt_rand(-400, 400) / 100, 2),
+                            'recorded_date' => now()->subDays($daysAgo)->toDateString(),
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // Wider completed-order history so demand direction and best-day insights
+        // have data beyond the 7-day demo orders above.
+        $lito = User::where('email', 'lito@anilink.test')->first();
+        $litoProduct = $lito ? Product::where('farmer_id', $lito->id)->orderBy('id')->first() : null;
+        if ($buyer && $litoProduct && Order::where('status', 'completed')->count() === 0) {
+            foreach (range(1, 14) as $i) {
+                $qty = 2 + intdiv($i, 3); // gently rising volume → demand trend reads "rising"
+                $date = now()->subDays(56 - $i * 4)->setHour(rand(7, 18));
+                $order = Order::create([
+                    'buyer_id' => $buyer->id,
+                    'farmer_id' => $lito->id,
+                    'order_type' => 'retail',
+                    'status' => 'completed',
+                    'fulfillment_type' => 'pickup',
+                    'total_amount' => $litoProduct->price_per_unit * $qty,
+                    'created_at' => $date,
+                    'updated_at' => $date,
+                ]);
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $litoProduct->id,
+                    'quantity' => $qty,
+                    'unit_price' => $litoProduct->price_per_unit,
+                    'subtotal' => $litoProduct->price_per_unit * $qty,
+                ]);
             }
         }
     }

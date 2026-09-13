@@ -258,6 +258,13 @@ export default function InventoryScreen({ navigation }) {
         ListHeaderComponent={
           <View style={{ gap: spacing.md }}>
             <SummaryCard daily={daily} weekly={weekly} pendingCount={pendingCount} />
+            <Pressable onPress={() => navigation.navigate('Predict')} style={s.predictCard}>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text style={s.predictEyebrow}>ANI-PREDICT • MARKET INSIGHTS</Text>
+                <Text style={s.predictText}>Price trends, demand forecast and the best time to sell your harvests.</Text>
+              </View>
+              <Text style={s.predictArrow}>›</Text>
+            </Pressable>
             {usingMock && <View style={s.offlineBanner}><Text style={s.offlineText}>Offline — cached harvests • stock changes will sync (per spec offline queuing)</Text></View>}
             {lowStock.length > 0 && (
               <View style={s.alertCard}>
@@ -454,4 +461,8 @@ const s = StyleSheet.create({
   pickBtnText: { ...typography.bodyMedium, color: colors.forestGreen },
   empty: { padding: 32, alignItems: 'center' },
   emptyText: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
+  predictCard: { backgroundColor: colors.forestGreen, borderRadius: radius.md, padding: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, ...shadow.card },
+  predictEyebrow: { fontSize: 10, fontFamily: 'Poppins_600SemiBold', letterSpacing: 0.6, color: 'rgba(255,255,255,0.75)' },
+  predictText: { ...typography.caption, color: colors.white, lineHeight: 17 },
+  predictArrow: { fontSize: 26, color: colors.white, fontFamily: 'Poppins_600SemiBold' },
 });

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FarmerDashboardController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\PredictController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PushTokenController;
 use App\Http\Controllers\Api\ReviewController;
@@ -53,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/farmer/products', [ProductController::class, 'myProducts']);
             Route::post('/farmer/verification-doc', [AuthController::class, 'uploadVerificationDoc']);
             Route::get('/farmer/dashboard', [FarmerDashboardController::class, 'index']);
+            Route::get('/predict/insights', [PredictController::class, 'insights']);
         });
 
         // ── Orders / Cart / Checkout — Buyer + Farmer shared ──

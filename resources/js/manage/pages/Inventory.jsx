@@ -30,6 +30,7 @@ export default function Inventory() {
   // Real SQL aggregates from /farmer/dashboard — the old client-side math over the
   // first page of orders quietly dropped older sales from the totals.
   const { data: dash } = useQuery({ queryKey: ['farmer-dashboard'], queryFn: () => api.dashboard() })
+  const { data: predict } = useQuery({ queryKey: ['predict-insights'], queryFn: () => api.insights() })
   const { data: cats } = useQuery({ queryKey: ['categories'], queryFn: () => api.categories() })
   const categories = Array.isArray(cats) ? cats : (cats?.data ?? [])
 
@@ -205,6 +206,32 @@ export default function Inventory() {
               <button onClick={()=>adjust.mutate({ id: p.id, delta: 10 })} className="h-7 px-3 rounded-full bg-[#2E5339] text-white text-xs font-semibold hover:bg-[#24412D] transition">+10</button>
             </span>
           ))}
+        </div>
+      )}
+
+      {/* AniPredict — market insights (same endpoint as the mobile Predict screen) */}
+      {predict?.category && (
+        <div className="bg-white rounded-[12px] border border-[#E8E2D6] p-5 shadow-[0_4px_12px_rgba(46,83,57,0.06)]">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="text-xs font-semibold tracking-[0.06em] uppercase text-[#8A8A8A]">AniPredict · {predict.category.name}</div>
+            {predict.demand?.direction && (
+              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border capitalize ${predict.demand.direction === 'rising' ? 'bg-[#E8F0E9] border-[#C5D9C7] text-[#4A7C59]' : predict.demand.direction === 'falling' ? 'bg-[#FDEDEC] border-[#E8C6C6] text-[#B0413E]' : 'bg-[#FFF4D6] border-[#F2D98A] text-[#8A6A0A]'}`}>
+                {predict.demand.direction === 'rising' ? '↑' : predict.demand.direction === 'falling' ? '↓' : '→'} demand {predict.demand.direction}
+              </span>
+            )}
+          </div>
+          <div className="mt-2 text-sm text-[#5C5C5C]">
+            {predict.best_time?.recommendation || 'Price history builds as your orders complete.'}
+          </div>
+          {predict.regional_comparison?.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {predict.regional_comparison.map(r => (
+                <span key={r.region} className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs ${r.is_home ? 'bg-[#E8F0E9] border-[#C5D9C7] text-[#2E5339] font-semibold' : 'bg-white border-[#E8E2D6] text-[#5C5C5C]'}`}>
+                  {r.region}{r.is_home ? ' (you)' : ''} — {fmtPeso(r.avg_price)}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

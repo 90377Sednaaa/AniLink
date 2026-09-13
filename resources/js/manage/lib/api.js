@@ -40,6 +40,7 @@ export const api = {
   me: () => apiFetch('/me'),
   farmerProducts: (params = {}) => apiFetch(`/farmer/products?${qs(params)}`),
   dashboard: () => apiFetch('/farmer/dashboard'),
+  insights: () => apiFetch('/predict/insights'),
   adjustStock: (id, changeAmount, reason = 'adjustment') => apiFetch(`/products/${id}/stock`, { method: 'PATCH', body: { change_amount: changeAmount, reason } }),
   updateProduct: (id, payload) => apiFetch(`/products/${id}`, { method: 'PUT', body: payload }),
   createProduct: (payload) => {

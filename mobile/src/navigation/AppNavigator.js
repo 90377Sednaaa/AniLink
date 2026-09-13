@@ -13,8 +13,8 @@ import FarmerOrdersScreen from '../screens/FarmerOrdersScreen';
 import BuyerOrdersScreen from '../screens/BuyerOrdersScreen';
 import InventoryScreen from '../screens/InventoryScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
-import PredictPlaceholder from '../screens/PredictPlaceholder';
 import ProfilePlaceholder from '../screens/ProfilePlaceholder';
+import PredictScreen from '../screens/PredictScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import ReviewScreen from '../screens/ReviewScreen';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
@@ -46,13 +46,6 @@ function OrdersRoute() {
   const { user } = useAuth();
   if (user?.role === 'farmer') return <FarmerOrdersScreen />;
   return <BuyerOrdersScreen />;
-}
-
-function ManageRoute() {
-  const { user } = useAuth();
-  // DESIGN.md: Farmer view and Buyer view share same shell but swap tab contents based on role
-  if (user?.role === 'farmer') return <InventoryScreen />;
-  return <PredictPlaceholder />;
 }
 
 function HomeStack() {
@@ -92,15 +85,16 @@ function Tabs() {
     >
       <Tab.Screen name="HomeTab" component={HomeStack} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Home" focused={focused} /> }} />
       <Tab.Screen name="OrdersTab" component={OrdersRoute} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Orders" focused={focused} /> }} />
-      {/* DESIGN.md: bottom tab Home / Orders / Inventory-Predict / Profile — swaps on role */}
-      <Tab.Screen
-        name="ManageTab"
-        component={ManageRoute}
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon label={isFarmer ? 'Inventory' : 'Predict'} focused={focused} />,
-          tabBarBadge: undefined,
-        }}
-      />
+      {/* DESIGN.md: bottom tab Home / Orders / Inventory-Predict / Profile — swaps on role.
+          AniPredict is a farmer tool per spec: it opens from a card inside the farmer's
+          Inventory tab; buyers get Home / Orders / Profile. */}
+      {isFarmer && (
+        <Tab.Screen
+          name="ManageTab"
+          component={InventoryScreen}
+          options={{ tabBarIcon: ({ focused }) => <TabIcon label="Inventory" focused={focused} /> }}
+        />
+      )}
       {isAdmin && (
         <Tab.Screen name="AdminTab" component={AdminStack} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Admin" focused={focused} /> }} />
       )}
@@ -116,6 +110,7 @@ export default function AppNavigator() {
       <RootStack.Screen name="Notifications" component={NotificationsScreen} options={{ presentation: 'card' }} />
       <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ presentation: 'card' }} />
       <RootStack.Screen name="Review" component={ReviewScreen} options={{ presentation: 'card' }} />
+      <RootStack.Screen name="Predict" component={PredictScreen} options={{ presentation: 'card' }} />
     </RootStack.Navigator>
   );
 }
