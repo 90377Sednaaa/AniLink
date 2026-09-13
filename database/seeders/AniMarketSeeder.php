@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Models\PriceTrend;
 use App\Models\Product;
 use App\Models\QuoteRequest;
+use App\Models\Region;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -217,6 +218,44 @@ class AniMarketSeeder extends Seeder
                     'unit_price' => $litoProduct->price_per_unit,
                     'subtotal' => $litoProduct->price_per_unit * $qty,
                 ]);
+            }
+        }
+
+        // ── Region reference data (AniPredict + distance sort) ──
+        // Philippine provinces with approximate centroids; good enough for
+        // "about N km away" display. Guarded against reseed duplicates.
+        if (Region::count() === 0) {
+            $provinces = [
+                ['Abra', 17.60, 120.75], ['Agusan del Norte', 8.94, 125.54], ['Agusan del Sur', 8.50, 125.99],
+                ['Aklan', 11.67, 122.37], ['Albay', 13.17, 123.52], ['Antique', 10.75, 122.17],
+                ['Apayao', 18.25, 121.28], ['Aurora', 15.80, 121.50], ['Basilan', 6.70, 122.00],
+                ['Bataan', 14.63, 120.53], ['Batanes', 20.45, 121.97], ['Batangas', 13.88, 121.06],
+                ['Benguet', 16.50, 120.65], ['Biliran', 11.58, 124.35], ['Bohol', 9.75, 124.10],
+                ['Bukidnon', 8.05, 124.92], ['Bulacan', 14.95, 120.88], ['Cagayan', 18.00, 121.79],
+                ['Camarines Norte', 14.14, 122.76], ['Camarines Sur', 13.70, 123.30], ['Camiguin', 9.17, 124.73],
+                ['Capiz', 11.42, 122.60], ['Catanduanes', 13.87, 124.20], ['Cavite', 14.48, 120.90],
+                ['Cebu', 10.52, 123.75], ['Davao de Oro', 7.68, 126.03], ['Davao del Norte', 7.44, 125.71],
+                ['Davao del Sur', 6.75, 125.35], ['Davao Occidental', 6.10, 125.60], ['Davao Oriental', 7.16, 126.42],
+                ['Dinagat Islands', 10.13, 125.60], ['Eastern Samar', 11.30, 125.58], ['Guimaras', 10.58, 122.57],
+                ['Ifugao', 16.83, 121.17], ['Ilocos Norte', 18.06, 120.77], ['Ilocos Sur', 17.22, 120.60],
+                ['Iloilo', 10.94, 122.36], ['Isabela', 16.98, 121.77], ['Kalinga', 17.42, 121.36],
+                ['La Union', 16.44, 120.44], ['Laguna', 14.20, 121.36], ['Lanao del Norte', 8.00, 123.90],
+                ['Lanao del Sur', 7.87, 124.32], ['Metro Manila', 14.60, 120.98], ['Leyte', 10.95, 124.83],
+                ['Maguindanao', 7.10, 124.35], ['Marinduque', 13.40, 121.83], ['Masbate', 12.30, 123.55],
+                ['Misamis Occidental', 8.25, 123.66], ['Misamis Oriental', 8.48, 124.75], ['Mountain Province', 17.05, 120.98],
+                ['Negros Occidental', 10.40, 122.98], ['Negros Oriental', 9.50, 122.95], ['Northern Samar', 12.45, 124.75],
+                ['Nueva Ecija', 15.58, 120.92], ['Nueva Vizcaya', 16.32, 121.24], ['Occidental Mindoro', 12.70, 120.85],
+                ['Oriental Mindoro', 13.05, 121.48], ['Palawan', 9.84, 118.74], ['Pampanga', 15.20, 120.60],
+                ['Pangasinan', 15.89, 120.30], ['Quezon', 14.10, 121.95], ['Quirino', 16.30, 121.72],
+                ['Rizal', 14.60, 121.20], ['Romblon', 12.58, 122.27], ['Samar', 11.80, 125.03],
+                ['Sarangani', 5.95, 125.15], ['Siquijor', 9.20, 123.55], ['Sorsogon', 12.97, 124.00],
+                ['South Cotabato', 6.42, 124.80], ['Southern Leyte', 10.33, 125.10], ['Sultan Kudarat', 6.63, 124.33],
+                ['Sulu', 5.90, 121.20], ['Surigao del Norte', 9.60, 125.50], ['Surigao del Sur', 8.55, 126.15],
+                ['Tarlac', 15.47, 120.59], ['Tawi-Tawi', 5.50, 120.50], ['Zambales', 15.30, 119.95],
+                ['Zamboanga del Norte', 8.42, 123.15], ['Zamboanga del Sur', 7.78, 123.40], ['Zamboanga Sibugay', 7.65, 122.75],
+            ];
+            foreach ($provinces as [$name, $lat, $lng]) {
+                Region::firstOrCreate(['name' => $name], ['latitude' => $lat, 'longitude' => $lng]);
             }
         }
 

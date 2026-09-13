@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\TwoFactorController;
 use App\Models\Category;
 use App\Models\Notification;
+use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -123,6 +124,9 @@ Route::get('/categories', function () {
     return response()->json(Category::orderBy('name')->get(['id', 'name', 'slug']));
 });
 Route::get('/farmers/{farmer}/reviews', [ReviewController::class, 'forFarmer']);
+Route::get('/regions', function () {
+    return response()->json(Region::orderBy('name')->get(['id', 'name']));
+});
 
 // Health check for API
 Route::get('/health', fn () => response()->json(['status' => 'ok', 'service' => 'AniLink API', 'version' => '1.0']));

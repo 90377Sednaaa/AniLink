@@ -9,7 +9,7 @@ import CategoryChips from '../components/CategoryChips';
 import ProductCard from '../components/ProductCard';
 import { categories as staticCategories, mockProducts } from '../data/mockProducts';
 import { useCart } from '../context/CartContext';
-import { getProducts, getCategories } from '../api/products';
+import { getProducts, getCategories, getRegions } from '../api/products';
 import NotificationBell from '../components/NotificationBell';
 
 const sorts = [
@@ -32,6 +32,8 @@ export default function FeedScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [usingMock, setUsingMock] = useState(false);
+  const [near, setNear] = useState(null);
+  const [regions, setRegions] = useState([]);
   const { add, count, total } = useCart();
 
   const fetchProducts = useCallback(async (overrides = {}) => {
@@ -41,6 +43,7 @@ export default function FeedScreen({ navigation }) {
       sort: overrides.sort !== undefined ? overrides.sort : sort,
       verified_only: overrides.verifiedOnly !== undefined ? overrides.verifiedOnly : verifiedOnly ? 1 : undefined,
       price_max: overrides.priceMax !== undefined ? overrides.priceMax : priceMax ?? undefined,
+      near: overrides.near !== undefined ? overrides.near : near ?? undefined,
     };
     setLoading(true);
     setError(null);
@@ -73,6 +76,10 @@ export default function FeedScreen({ navigation }) {
       setRefreshing(false);
     }
   }, [query, activeCat, sort, verifiedOnly, priceMax]);
+
+  useEffect(() => {
+    getRegions().then((res) => setRegions(Array.isArray(res) ? res : (res?.data ?? []))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     getCategories().then((cats) => {
@@ -133,6 +140,21 @@ export default function FeedScreen({ navigation }) {
                 <Text style={[s.toggleText, priceMax && s.toggleTextOn]}>Under ₱100/kg</Text>
               </Pressable>
             </View>
+            {sort === 'distance' && (
+              <View style={{ gap: 6 }}>
+                <Text style={s.filterTitle}>Near me (province)</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                  <Pressable onPress={() => setNear(null)} style={[s.sortChip, !near && s.sortActive]}>
+                    <Text style={[s.sortText, !near && s.sortTextActive]}>Anywhere</Text>
+                  </Pressable>
+                  {regions.map((r) => (
+                    <Pressable key={r.id} onPress={() => setNear(r.name)} style={[s.sortChip, near === r.name && s.sortActive]}>
+                      <Text style={[s.sortText, near === r.name && s.sortTextActive]}>{r.name}</Text>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
             <Text style={s.filterNote}>Filters apply instantly • no extra taps</Text>
           </View>
         )}
