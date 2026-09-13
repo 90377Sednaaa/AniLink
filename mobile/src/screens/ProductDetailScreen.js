@@ -7,6 +7,7 @@ import { typography } from '../theme/typography';
 import QuantityStepper from '../components/QuantityStepper';
 import TrustBadgeRow from '../components/TrustBadgeRow';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { peso } from '../utils/format';
 
 export default function ProductDetailScreen({ route, navigation }) {
@@ -14,6 +15,7 @@ export default function ProductDetailScreen({ route, navigation }) {
   const [qty, setQty] = useState(1);
   const [type, setType] = useState('retail'); // retail | bulk
   const { add, unitPriceFor } = useCart();
+  const { user } = useAuth();
   const unitPrice = unitPriceFor(product, qty, type);
   const canBulk = product.bulk_price && product.min_bulk_quantity;
   const bulkActive = type === 'bulk' && qty >= product.min_bulk_quantity;
@@ -67,6 +69,12 @@ export default function ProductDetailScreen({ route, navigation }) {
             <Text style={s.stockNote}>{product.available_quantity} {product.unit_type} available • {product.unit_type === 'kg' ? 'We weigh at pickup' : 'Packed today'}</Text>
           </View>
 
+          {canBulk && user?.role === 'buyer_business' && (
+            <Pressable onPress={() => navigation.navigate('QuoteRequest', { product })} style={s.quoteBtn}>
+              <Text style={s.quoteBtnText}>Request bulk quote (B2B) — haggle-free pricing</Text>
+            </Pressable>
+          )}
+
           <View style={s.section}>
             <Text style={s.sectionLabel}>Subtotal</Text>
             <Text style={s.subtotal}>{peso(unitPrice * qty)} <Text style={s.subtotalQty}>for {qty} {product.unit_type}</Text></Text>
@@ -112,6 +120,8 @@ const s = StyleSheet.create({
   toggleText: { ...typography.caption, fontFamily: 'Poppins_600SemiBold', color: colors.textSecondary, textAlign: 'center' },
   toggleTextOn: { color: colors.white },
   desc: { ...typography.body, color: colors.textSecondary, lineHeight: 22 },
+  quoteBtn: { height: 44, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.harvestGold, backgroundColor: colors.harvestGoldLight, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
+  quoteBtnText: { ...typography.caption, fontFamily: 'Poppins_600SemiBold', color: colors.harvestGoldDark, textAlign: 'center' },
   farmerCard: { backgroundColor: colors.white, borderRadius: radius.md, borderWidth: 1, borderColor: colors.borderLight, padding: spacing.md, gap: spacing.sm, ...shadow.card },
   farmerHead: { flexDirection: 'row', gap: spacing.sm },
   avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.forestGreen, alignItems: 'center', justifyContent: 'center' },

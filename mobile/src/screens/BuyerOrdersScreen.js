@@ -48,8 +48,13 @@ export default function BuyerOrdersScreen() {
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>Your orders</Text>
-        <Text style={s.headerSub}>{orders.length} orders • real-time updates via Reverb (future)</Text>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={s.headerTitle}>Your orders</Text>
+          <Text style={s.headerSub}>{orders.length} orders • real-time updates via Reverb (future)</Text>
+        </View>
+        <Pressable onPress={() => navigation.navigate('BuyerQuotes')} style={s.quotesBtn}>
+          <Text style={s.quotesBtnText}>Bulk quotes</Text>
+        </Pressable>
       </View>
       {usingMock && <View style={s.offlineBanner}><Text style={s.offlineText}>Offline demo • will sync to /api/orders</Text></View>}
       <FlatList
@@ -90,6 +95,8 @@ const s = StyleSheet.create({
   card: { backgroundColor: colors.white, borderRadius: radius.md, borderWidth: 1, borderColor: colors.borderLight, padding: spacing.md, gap: 6 },
   head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   orderId: { ...typography.bodyMedium, color: colors.textPrimary },
+  quotesBtn: { height: 36, paddingHorizontal: 12, borderRadius: radius.pill, backgroundColor: colors.harvestGold, alignItems: 'center', justifyContent: 'center' },
+  quotesBtnText: { fontSize: 12, fontFamily: 'Poppins_600SemiBold', color: colors.textPrimary },
   meta: { ...typography.caption, color: colors.textMuted },
   rateBtn: { height: 40, borderRadius: radius.pill, backgroundColor: colors.harvestGoldLight, borderWidth: 1, borderColor: '#F2D98A', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   rateBtnText: { ...typography.caption, fontFamily: 'Poppins_600SemiBold', color: colors.harvestGoldDark },

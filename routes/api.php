@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PredictController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PushTokenController;
+use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\TwoFactorController;
 use App\Models\Category;
@@ -55,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/farmer/verification-doc', [AuthController::class, 'uploadVerificationDoc']);
             Route::get('/farmer/dashboard', [FarmerDashboardController::class, 'index']);
             Route::get('/predict/insights', [PredictController::class, 'insights']);
+            Route::get('/farmer/quotes', [QuoteController::class, 'farmerIndex']);
+            Route::patch('/farmer/quotes/{quote}', [QuoteController::class, 'respond']);
         });
 
         // ── Orders / Cart / Checkout — Buyer + Farmer shared ──
@@ -72,7 +75,10 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         Route::middleware('role:buyer_business')->group(function () {
-            Route::get('/buyer/business/quotes', fn () => response()->json(['message' => 'B2B bulk quotes']));
+            Route::get('/quotes', [QuoteController::class, 'index']);
+            Route::post('/quotes', [QuoteController::class, 'store']);
+            Route::patch('/quotes/{quote}/accept', [QuoteController::class, 'accept']);
+            Route::patch('/quotes/{quote}/withdraw', [QuoteController::class, 'withdraw']);
         });
 
         // Admin routes (verification, moderation, analytics) — real controllers per spec

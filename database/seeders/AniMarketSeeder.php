@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PriceTrend;
 use App\Models\Product;
+use App\Models\QuoteRequest;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -215,6 +216,35 @@ class AniMarketSeeder extends Seeder
                     'quantity' => $qty,
                     'unit_price' => $litoProduct->price_per_unit,
                     'subtotal' => $litoProduct->price_per_unit * $qty,
+                ]);
+            }
+        }
+
+        // Demo bulk quote requests (one-round negotiation, AniMarket B2B)
+        if (QuoteRequest::count() === 0) {
+            $biz = User::where('email', 'biz@anilink.test')->first();
+            $kamatis = Product::where('name', 'Kamatis (Native)')->first();
+            $dinorado = Product::where('name', 'Bigas — Dinorado')->first();
+            if ($biz && $kamatis) {
+                QuoteRequest::create([
+                    'buyer_id' => $biz->id,
+                    'farmer_id' => $kamatis->farmer_id,
+                    'product_id' => $kamatis->id,
+                    'quantity' => 25,
+                    'message' => 'Weekly carinderia supply — best price for 25kg?',
+                    'status' => 'pending',
+                ]);
+            }
+            if ($biz && $dinorado) {
+                QuoteRequest::create([
+                    'buyer_id' => $biz->id,
+                    'farmer_id' => $dinorado->farmer_id,
+                    'product_id' => $dinorado->id,
+                    'quantity' => 10,
+                    'message' => 'Monthly rice supply for 3 branches.',
+                    'status' => 'quoted',
+                    'quoted_unit_price' => 1180,
+                    'response_note' => 'For 10+ sacks, ₱1,180/sack locked for 2 weeks.',
                 ]);
             }
         }

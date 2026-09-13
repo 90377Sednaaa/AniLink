@@ -41,6 +41,8 @@ export const api = {
   farmerProducts: (params = {}) => apiFetch(`/farmer/products?${qs(params)}`),
   dashboard: () => apiFetch('/farmer/dashboard'),
   insights: () => apiFetch('/predict/insights'),
+  farmerQuotes: () => apiFetch('/farmer/quotes'),
+  respondQuote: (id, payload) => apiFetch(`/farmer/quotes/${id}`, { method: 'PATCH', body: payload }),
   adjustStock: (id, changeAmount, reason = 'adjustment') => apiFetch(`/products/${id}/stock`, { method: 'PATCH', body: { change_amount: changeAmount, reason } }),
   updateProduct: (id, payload) => apiFetch(`/products/${id}`, { method: 'PUT', body: payload }),
   createProduct: (payload) => {

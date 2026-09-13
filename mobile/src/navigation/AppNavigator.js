@@ -17,6 +17,9 @@ import ProfilePlaceholder from '../screens/ProfilePlaceholder';
 import PredictScreen from '../screens/PredictScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import ReviewScreen from '../screens/ReviewScreen';
+import QuoteRequestScreen from '../screens/QuoteRequestScreen';
+import BuyerQuotesScreen from '../screens/BuyerQuotesScreen';
+import FarmerQuotesScreen from '../screens/FarmerQuotesScreen';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import AdminVerificationsScreen from '../screens/admin/AdminVerificationsScreen';
 import AdminListingsScreen from '../screens/admin/AdminListingsScreen';
@@ -111,6 +114,9 @@ export default function AppNavigator() {
       <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ presentation: 'card' }} />
       <RootStack.Screen name="Review" component={ReviewScreen} options={{ presentation: 'card' }} />
       <RootStack.Screen name="Predict" component={PredictScreen} options={{ presentation: 'card' }} />
+      <RootStack.Screen name="QuoteRequest" component={QuoteRequestScreen} options={{ presentation: 'card' }} />
+      <RootStack.Screen name="BuyerQuotes" component={BuyerQuotesScreen} options={{ presentation: 'card' }} />
+      <RootStack.Screen name="FarmerQuotes" component={FarmerQuotesScreen} options={{ presentation: 'card' }} />
     </RootStack.Navigator>
   );
 }

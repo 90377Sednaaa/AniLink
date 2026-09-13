@@ -59,6 +59,10 @@ export const api = {
 
   farmerReviews: (farmerId) => apiFetch(`/farmers/${farmerId}/reviews`, { auth: false }),
 
+  quotes: () => apiFetch('/quotes'),
+  acceptQuote: (id, fulfillmentType) => apiFetch(`/quotes/${id}/accept`, { method: 'PATCH', body: { fulfillment_type: fulfillmentType } }),
+  withdrawQuote: (id) => apiFetch(`/quotes/${id}/withdraw`, { method: 'PATCH' }),
+
   notifications: () => apiFetch('/notifications'),
   unreadCount: () => apiFetch('/notifications/unread-count'),
   markNotificationRead: (id) => apiFetch(`/notifications/${id}/read`, { method: 'PATCH' }),

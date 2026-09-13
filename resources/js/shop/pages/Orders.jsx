@@ -2,9 +2,82 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
+import { useAuth } from '../lib/auth'
 import { peso, statusColor } from '../components/format'
 
 const filters = ['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered', 'completed', 'cancelled']
+
+// Business buyers: one-round bulk quote negotiation (request from a product page)
+function QuotePanel() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  const [busy, setBusy] = useState(false)
+  const { data } = useQuery({
+    queryKey: ['quotes'],
+    queryFn: () => api.quotes(),
+    enabled: user?.role === 'buyer_business',
+  })
+
+  if (user?.role !== 'buyer_business') return null
+  const quotes = data?.quotes ?? []
+  if (quotes.length === 0) return null
+
+  const act = async (fn) => {
+    setBusy(true)
+    try {
+      await fn()
+      qc.invalidateQueries({ queryKey: ['quotes'] })
+    } catch (err) {
+      alert(err.message || 'Quote action failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="bg-[#FFF4D6] border border-[#F2D98A] rounded-[16px] p-5">
+      <div className="text-xs font-semibold tracking-[0.06em] uppercase text-[#8A6A0A] mb-3">Bulk quotes (B2B)</div>
+      <div className="space-y-3">
+        {quotes.map(q => (
+          <div key={q.id} className="bg-white border border-[#F2D98A] rounded-[12px] p-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <span className="font-semibold text-sm">{q.quantity} {q.product?.unit_type} · {q.product?.name}</span>
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full border capitalize bg-[#F0EDE6] text-[#5C5C5C]">{q.status}</span>
+            </div>
+            <div className="text-xs text-[#8A8A8A] mt-0.5">From {q.farmer?.farm_name || q.farmer?.name || '—'}</div>
+            {q.status === 'quoted' && (
+              <div className="text-sm mt-1">
+                <span className="font-semibold text-[#2E5339]">Quoted {peso(q.quoted_unit_price)}/{q.product?.unit_type}</span>
+                <span className="text-[#8A8A8A]"> — order total ≈ {peso(q.quoted_unit_price * q.quantity)}{q.response_note ? ` · ${q.response_note}` : ''}</span>
+              </div>
+            )}
+            {q.message && q.status === 'pending' && <div className="text-sm text-[#5C5C5C] mt-1">“{q.message}”</div>}
+            <div className="flex flex-wrap gap-2 mt-3">
+              {q.status === 'quoted' && (
+                <>
+                  <button disabled={busy} onClick={() => act(() => api.acceptQuote(q.id, 'pickup'))}
+                    className="text-xs font-semibold px-3 py-2 rounded-[10px] bg-[#2E5339] text-white hover:brightness-110 disabled:opacity-50">
+                    Accept — pickup
+                  </button>
+                  <button disabled={busy} onClick={() => act(() => api.acceptQuote(q.id, 'delivery'))}
+                    className="text-xs font-semibold px-3 py-2 rounded-[10px] border border-[#C5D9C7] text-[#2E5339] hover:bg-[#FAF8F3] disabled:opacity-50">
+                    Accept — delivery (+{peso(45)})
+                  </button>
+                </>
+              )}
+              {(q.status === 'pending' || q.status === 'quoted') && (
+                <button disabled={busy} onClick={() => act(() => api.withdrawQuote(q.id))}
+                  className="text-xs font-semibold px-3 py-2 rounded-[10px] border border-[#E5B9B6] text-[#B0413E] hover:bg-[#F6E3E2] disabled:opacity-50">
+                  Withdraw
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function Orders() {
   const [params] = useSearchParams()
@@ -62,6 +135,8 @@ export default function Orders() {
           🎉 Order placed! The farmer will confirm shortly — you'll get a notification at every step.
         </div>
       )}
+
+      <QuotePanel />
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {filters.map(f => (

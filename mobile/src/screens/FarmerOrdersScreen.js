@@ -131,6 +131,9 @@ export default function FarmerOrdersScreen({ navigation }) {
           <Text style={s.headerSub}>{orders.length} orders • {counts.pending || 0} pending • via API + push</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+          <Pressable onPress={() => navigation?.navigate('FarmerQuotes')} style={s.quotesBtn}>
+            <Text style={s.quotesBtnText}>Bulk quotes</Text>
+          </Pressable>
           <NotificationBell onPress={() => navigation?.navigate('Notifications')} />
           <View style={s.liveDot}><View style={s.livePulse} /><Text style={s.liveText}>Live</Text></View>
         </View>
@@ -215,6 +218,8 @@ const s = StyleSheet.create({
   },
   headerEyebrow: { ...typography.label, color: 'rgba(255,255,255,0.7)', fontSize: 10 },
   headerTitle: { ...typography.heading, color: colors.white, marginTop: 2 },
+  quotesBtn: { height: 36, paddingHorizontal: 12, borderRadius: radius.pill, backgroundColor: colors.harvestGold, alignItems: 'center', justifyContent: 'center' },
+  quotesBtnText: { fontSize: 12, fontFamily: 'Poppins_600SemiBold', color: colors.textPrimary },
   headerSub: { ...typography.caption, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
   liveDot: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.14)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 6 },
   livePulse: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.harvestGold },
