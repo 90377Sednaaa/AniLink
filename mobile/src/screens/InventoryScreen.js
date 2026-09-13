@@ -73,7 +73,7 @@ export default function InventoryScreen({ navigation }) {
       setUsingMock(false);
     } catch (e) {
       // rural connectivity fallback — show cached mockProducts filtered to demo farmer
-      setProducts(mockProducts.filter((p) => p.farmer.name.includes('Lito') || p.farmer.verified));
+      setProducts(mockProducts.filter((p) => p.farmer?.name?.includes('Lito') || p.farmer?.verified));
       setUsingMock(true);
     } finally {
       setLoading(false);
@@ -140,7 +140,7 @@ export default function InventoryScreen({ navigation }) {
         setProducts((l) => l.map((p) => (p.id === product.id ? { ...p, status: isSoldOut ? 'available' : 'sold_out', available_quantity: isSoldOut ? Math.max(5, Number(p.available_quantity)) : 0 } : p)));
         return;
       }
-      const res = await updateProduct(product.id, { status: isSoldOut ? 'available' : 'sold_out', available_quantity: isSoldOut ? undefined : 0 });
+      const res = await updateProduct(product.id, { status: isSoldOut ? 'available' : 'sold_out', available_quantity: isSoldOut ? Math.max(10, Number(product.available_quantity) || 0) : 0 });
       const updated = res.data ?? res;
       setProducts((l) => l.map((p) => (p.id === updated.id ? updated : p)));
     } catch (e) {
@@ -185,7 +185,7 @@ export default function InventoryScreen({ navigation }) {
       if (pickedImages.length > 0) {
         const fd = new FormData();
         fd.append('name', form.name.trim());
-        fd.append('category_id', String(Number(form.category_id)));
+        fd.append('category_id', String(form.category_id).trim());
         fd.append('unit_type', form.unit_type);
         fd.append('price_per_unit', String(Number(form.price_per_unit)));
         fd.append('available_quantity', String(Number(form.available_quantity)));

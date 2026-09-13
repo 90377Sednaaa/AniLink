@@ -16,7 +16,7 @@ const CATEGORIES = [
 
 // Report an order dispute or user misconduct — goes to the admin queue.
 export default function ReportScreen({ route, navigation }) {
-  const { orderId, reportedUserId, subjectLabel } = route.params;
+  const { orderId, reportedUserId, subjectLabel } = route.params ?? {};
   const [category, setCategory] = useState('order_issue');
   const [description, setDescription] = useState('');
   const [busy, setBusy] = useState(false);

@@ -64,18 +64,19 @@ export default function FeedScreen({ navigation }) {
       // keep mockProducts filtered locally for demo-offline
       setUsingMock(true);
       const list = [...mockProducts];
-      const q = (params.search || '').toLowerCase();
+      const q = String(params.search || '').toLowerCase();
+      const catOf = (p) => (typeof p.category === 'string' ? p.category : p.category?.name ?? '');
       let filtered = list;
-      if (q) filtered = filtered.filter((p) => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
-      if (params.category && params.category !== 'all') filtered = filtered.filter((p) => String(p.category_id) === String(params.category) || p.category.toLowerCase() === String(params.category).toLowerCase());
-      if (params.verified_only) filtered = filtered.filter((p) => p.farmer.verified);
+      if (q) filtered = filtered.filter((p) => String(p.name ?? '').toLowerCase().includes(q) || catOf(p).toLowerCase().includes(q));
+      if (params.category && params.category !== 'all') filtered = filtered.filter((p) => String(p.category_id) === String(params.category) || catOf(p).toLowerCase() === String(params.category).toLowerCase());
+      if (params.verified_only) filtered = filtered.filter((p) => p.farmer?.verified);
       if (params.price_max) filtered = filtered.filter((p) => p.price_per_unit <= Number(params.price_max));
       setProducts(filtered);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [query, activeCat, sort, verifiedOnly, priceMax]);
+  }, [query, activeCat, sort, verifiedOnly, priceMax, near]);
 
   useEffect(() => {
     getRegions().then((res) => setRegions(Array.isArray(res) ? res : (res?.data ?? []))).catch(() => {});
@@ -95,7 +96,7 @@ export default function FeedScreen({ navigation }) {
   useEffect(() => {
     const t = setTimeout(() => fetchProducts(), 400);
     return () => clearTimeout(t);
-  }, [query, activeCat, sort, verifiedOnly, priceMax]);
+  }, [query, activeCat, sort, verifiedOnly, priceMax, near]);
 
   const onRefresh = useCallback(() => { setRefreshing(true); fetchProducts(); }, [fetchProducts]);
 

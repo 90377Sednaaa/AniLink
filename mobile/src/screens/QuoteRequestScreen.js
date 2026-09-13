@@ -9,12 +9,26 @@ import { peso } from '../utils/format';
 
 // B2B: business buyer requests a bulk quote on a listing (one-round flow).
 export default function QuoteRequestScreen({ route, navigation }) {
-  const { product } = route.params;
-  const [qty, setQty] = useState(product.min_bulk_quantity ?? 10);
+  const { product } = route.params ?? {};
+  const [qty, setQty] = useState(product?.min_bulk_quantity ?? 10);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
+
+  if (!product) {
+    return (
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <View style={[s.card, { alignItems: 'center' }]}>
+          <Text style={s.label}>No product selected</Text>
+          <Text style={s.error}>Open a listing first, then request a bulk quote.</Text>
+          <Pressable onPress={() => navigation.goBack()} style={s.btnPrimary}>
+            <Text style={s.btnPrimaryText}>‹ Back</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const submit = async () => {
     setBusy(true);

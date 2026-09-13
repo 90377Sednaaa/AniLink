@@ -30,7 +30,7 @@ const nextLabel = {
 
 const filters = ['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered', 'completed'];
 
-export default function FarmerOrdersScreen({ navigation }) {
+export default function FarmerOrdersScreen() {
   const navigation = useNavigation();
   const { token, login } = useAuth();
   const [orders, setOrders] = useState([]);

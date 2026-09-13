@@ -8,12 +8,26 @@ import { submitReview } from '../api/reviews';
 
 // Rate a completed order — 1 review per order, enforced by the API.
 export default function ReviewScreen({ route, navigation }) {
-  const { orderId, farmerName } = route.params;
+  const { orderId, farmerName } = route.params ?? {};
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
+
+  if (orderId == null) {
+    return (
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <View style={[s.card, { alignItems: 'center' }]}>
+          <Text style={s.label}>No order selected</Text>
+          <Text style={s.error}>Open a completed order first, then leave a review.</Text>
+          <Pressable onPress={() => navigation.goBack()} style={s.btnPrimary}>
+            <Text style={s.btnPrimaryText}>‹ Back</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const submit = async () => {
     setBusy(true);

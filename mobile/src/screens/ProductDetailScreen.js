@@ -11,15 +11,34 @@ import { useAuth } from '../context/AuthContext';
 import { peso } from '../utils/format';
 
 export default function ProductDetailScreen({ route, navigation }) {
-  const { product } = route.params;
-  const [qty, setQty] = useState(1);
-  const [type, setType] = useState('retail'); // retail | bulk
+  const { product } = route.params ?? {};
   const { add, unitPriceFor } = useCart();
   const { user } = useAuth();
+  const [qty, setQty] = useState(1);
+  const [type, setType] = useState('retail'); // retail | bulk
+
+  if (!product) {
+    return (
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <View style={[s.body, { alignItems: 'center', justifyContent: 'center', flex: 1 }]}>
+          <Text style={s.name}>Product unavailable</Text>
+          <Text style={s.desc}>This listing could not be opened. Please go back and try again.</Text>
+          <Pressable onPress={() => navigation.goBack()} style={s.cta}>
+            <Text style={s.ctaText}>‹ Back</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const farmer = product.farmer ?? {};
+  const categoryLabel = typeof product.category === 'string' ? product.category : product.category?.name ?? '';
+  const farmerInitials = String(farmer.name ?? '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  const stock = Number(product.available_quantity ?? 0);
   const unitPrice = unitPriceFor(product, qty, type);
   const canBulk = product.bulk_price && product.min_bulk_quantity;
-  const bulkActive = type === 'bulk' && qty >= product.min_bulk_quantity;
-  const lowStock = product.available_quantity <= 5;
+  const bulkActive = type === 'bulk' && qty >= Number(product.min_bulk_quantity ?? 0);
+  const lowStock = stock <= 5;
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
@@ -27,12 +46,12 @@ export default function ProductDetailScreen({ route, navigation }) {
         {/* Hero — low-bandwidth placeholder, not a heavy image */}
         <View style={s.hero}>
           <View style={s.heroPlaceholder}>
-            <Text style={s.heroEmoji}>{product.category === 'Bigas' ? '🌾' : product.category === 'Isda' ? '🐟' : '🥬'}</Text>
-            <Text style={s.heroLabel}>{product.name} • {product.category}</Text>
+            <Text style={s.heroEmoji}>{categoryLabel === 'Bigas' ? '🌾' : categoryLabel === 'Isda' ? '🐟' : '🥬'}</Text>
+            <Text style={s.heroLabel}>{product.name} • {categoryLabel}</Text>
             <Text style={s.heroSub}>Harvest {product.harvest_date} • Photo loads on Wi-Fi to save data</Text>
           </View>
           <Pressable onPress={() => navigation.goBack()} style={s.back}><Text style={s.backText}>‹ Back</Text></Pressable>
-          {lowStock && <View style={s.stockPill}><Text style={s.stockPillText}>Only {product.available_quantity} left</Text></View>}
+          {lowStock && <View style={s.stockPill}><Text style={s.stockPillText}>Only {stock} left</Text></View>}
         </View>
 
         <View style={s.body}>
@@ -52,11 +71,11 @@ export default function ProductDetailScreen({ route, navigation }) {
           {/* Farmer card — trust signal */}
           <View style={s.farmerCard}>
             <View style={s.farmerHead}>
-              <View style={s.avatar}><Text style={s.avatarText}>{product.farmer.name.split(' ').map((w) => w[0]).join('').slice(0,2)}</Text></View>
+              <View style={s.avatar}><Text style={s.avatarText}>{farmerInitials}</Text></View>
               <View style={{ flex: 1 }}>
-                <View style={s.farmerNameRow}><Text style={s.farmerName}>{product.farmer.name}</Text>{product.farmer.verified && <View style={s.verified}><Text style={s.verifiedText}>✓ Verified</Text></View>}</View>
-                <Text style={s.farmerFarm}>{product.farmer.farm_name} • {product.farmer.barangay}, {product.farmer.municipality}</Text>
-                <Text style={s.farmerMeta}>{product.rating ? `★ ${Number(product.rating).toFixed(1)}` : 'No reviews yet'} • {product.reviews} sold{product.farmer.distance_km != null ? ` • ${product.farmer.distance_km} km away` : ''}</Text>
+                <View style={s.farmerNameRow}><Text style={s.farmerName}>{farmer.name ?? '—'}</Text>{farmer.verified && <View style={s.verified}><Text style={s.verifiedText}>✓ Verified</Text></View>}</View>
+                <Text style={s.farmerFarm}>{farmer.farm_name ?? ''} • {farmer.barangay ?? ''}, {farmer.municipality ?? ''}</Text>
+                <Text style={s.farmerMeta}>{product.rating ? `★ ${Number(product.rating).toFixed(1)}` : 'No reviews yet'} • {product.reviews} sold{farmer.distance_km != null ? ` • ${farmer.distance_km} km away` : ''}</Text>
               </View>
             </View>
             <TrustBadgeRow />
@@ -65,8 +84,8 @@ export default function ProductDetailScreen({ route, navigation }) {
           {/* Quantity — large 44pt targets */}
           <View style={s.section}>
             <Text style={s.sectionLabel}>Quantity</Text>
-            <QuantityStepper value={qty} onDec={() => setQty((v) => Math.max(1, v - 1))} onInc={() => setQty((v) => Math.min(product.available_quantity, v + 1))} max={product.available_quantity} unit={product.unit_type} />
-            <Text style={s.stockNote}>{product.available_quantity} {product.unit_type} available • {product.unit_type === 'kg' ? 'We weigh at pickup' : 'Packed today'}</Text>
+            <QuantityStepper value={qty} onDec={() => setQty((v) => Math.max(1, v - 1))} onInc={() => setQty((v) => Math.min(Math.max(stock, 1), v + 1))} max={Math.max(stock, 1)} unit={product.unit_type} />
+            <Text style={s.stockNote}>{stock} {product.unit_type} available • {product.unit_type === 'kg' ? 'We weigh at pickup' : 'Packed today'}</Text>
           </View>
 
           {canBulk && user?.role === 'buyer_business' && (
