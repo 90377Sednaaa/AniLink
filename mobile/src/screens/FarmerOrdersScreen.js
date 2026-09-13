@@ -7,6 +7,7 @@ import { typography } from '../theme/typography';
 import StatusChip from '../components/StatusChip';
 import NotificationBell from '../components/NotificationBell';
 import { getOrders, getOrder } from '../api/orders';
+import { useNavigation } from '@react-navigation/native';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { peso } from '../utils/format';
@@ -30,6 +31,7 @@ const nextLabel = {
 const filters = ['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered', 'completed'];
 
 export default function FarmerOrdersScreen({ navigation }) {
+  const navigation = useNavigation();
   const { token, login } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -167,7 +169,12 @@ export default function FarmerOrdersScreen({ navigation }) {
             <View style={s.card}>
               <View style={s.cardHead}>
                 <Text style={s.orderId}>Order #{item.id}</Text>
-                <StatusChip status={item.status} />
+                <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+                  <Pressable onPress={() => navigation.navigate('Report', { orderId: item.id, subjectLabel: `Order #${item.id}` })} style={s.reportBtn}>
+                    <Text style={s.reportBtnText}>⚠ Report</Text>
+                  </Pressable>
+                  <StatusChip status={item.status} />
+                </View>
               </View>
               <View style={s.metaRow}>
                 <Text style={s.buyer} numberOfLines={1}>{item.buyer?.name ?? 'Buyer'} • {item.order_type === 'bulk' ? 'Bulk' : 'Retail'} • {item.fulfillment_type === 'delivery' ? 'Delivery' : 'Pickup'}</Text>
@@ -252,4 +259,6 @@ const s = StyleSheet.create({
   hint: { ...typography.caption, color: colors.textMuted, fontSize: 10, textAlign: 'center' },
   empty: { padding: 32, alignItems: 'center' },
   emptyText: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
+  reportBtn: { height: 30, paddingHorizontal: 10, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
+  reportBtnText: { fontSize: 11, color: colors.textMuted },
 });

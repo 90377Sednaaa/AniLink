@@ -50,6 +50,7 @@ export const api = {
   products: (params = {}) => apiFetch(`/products?${qs(params)}`, { auth: false }),
   product: (id) => apiFetch(`/products/${id}`, { auth: false }),
   categories: () => apiFetch('/categories', { auth: false }),
+  regions: () => apiFetch('/regions', { auth: false }),
 
   validateCart: (items, orderType) => apiFetch('/cart/validate', { method: 'POST', body: { items, order_type: orderType } }),
   createOrder: (payload) => apiFetch('/orders', { method: 'POST', body: payload }),
@@ -62,6 +63,7 @@ export const api = {
   quotes: () => apiFetch('/quotes'),
   acceptQuote: (id, fulfillmentType) => apiFetch(`/quotes/${id}/accept`, { method: 'PATCH', body: { fulfillment_type: fulfillmentType } }),
   withdrawQuote: (id) => apiFetch(`/quotes/${id}/withdraw`, { method: 'PATCH' }),
+  fileReport: (payload) => apiFetch('/reports', { method: 'POST', body: payload }),
 
   notifications: () => apiFetch('/notifications'),
   unreadCount: () => apiFetch('/notifications/unread-count'),

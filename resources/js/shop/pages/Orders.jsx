@@ -87,6 +87,9 @@ export default function Orders() {
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [ratedIds, setRatedIds] = useState([])
+  const [reportingId, setReportingId] = useState(null)
+  const [reportForm, setReportForm] = useState({ category: 'order_issue', description: '' })
+  const [reportedIds, setReportedIds] = useState([])
   const [busy, setBusy] = useState(false)
   const qc = useQueryClient()
 
@@ -108,6 +111,20 @@ export default function Orders() {
       alert(err.message || 'Could not cancel order')
     } finally {
       setCancellingId(null)
+    }
+  }
+
+  const submitReport = async (id) => {
+    setBusy(true)
+    try {
+      await api.fileReport({ order_id: id, category: reportForm.category, description: reportForm.description })
+      setReportedIds(ids => [...ids, id])
+      setReportingId(null)
+      setReportForm({ category: 'order_issue', description: '' })
+    } catch (err) {
+      alert(err.message || 'Could not file report')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -194,6 +211,14 @@ export default function Orders() {
                   {o.status === 'completed' && ratedIds.includes(o.id) && (
                     <span className="text-xs text-[#4A7C59] font-semibold">✓ Review submitted</span>
                   )}
+                  {!reportedIds.includes(o.id) && (
+                    <button
+                      onClick={() => setReportingId(reportingId === o.id ? null : o.id)}
+                      className="text-xs font-semibold px-3 py-2 rounded-[10px] border border-[#E8E2D6] text-[#5C5C5C] hover:bg-[#FAF8F3]"
+                    >
+                      {reportingId === o.id ? 'Close' : 'Report problem'}
+                    </button>
+                  )}
                   {o.status === 'pending' && (
                     <button
                       onClick={() => cancel(o.id)}
@@ -205,6 +230,42 @@ export default function Orders() {
                   )}
                 </div>
               </div>
+
+              {reportingId === o.id && !reportedIds.includes(o.id) && (
+                <form
+                  onSubmit={(e) => { e.preventDefault(); submitReport(o.id) }}
+                  className="mt-3 bg-[#FAF8F3] border border-[#E8E2D6] rounded-[12px] p-4 space-y-3"
+                >
+                  <div className="text-xs font-semibold tracking-[0.06em] uppercase text-[#8A8A8A]">Report a problem with order #{o.id}</div>
+                  <select
+                    value={reportForm.category}
+                    onChange={(e) => setReportForm({ ...reportForm, category: e.target.value })}
+                    className="w-full border border-[#E8E2D6] bg-white rounded-[12px] px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E5339]"
+                  >
+                    <option value="order_issue">Order issue (delivery, quality…)</option>
+                    <option value="payment">Payment problem</option>
+                    <option value="product_issue">Product not as listed</option>
+                    <option value="user_misconduct">Farmer conduct</option>
+                    <option value="other">Something else</option>
+                  </select>
+                  <textarea
+                    rows={3}
+                    required
+                    minLength={10}
+                    placeholder="Tell us what happened (min 10 characters)"
+                    value={reportForm.description}
+                    onChange={(e) => setReportForm({ ...reportForm, description: e.target.value })}
+                    className="w-full border border-[#E8E2D6] bg-white rounded-[12px] px-3 py-2 text-sm focus:outline-none focus:border-[#2E5339]"
+                  />
+                  <button disabled={busy}
+                    className="w-full py-2.5 rounded-[12px] bg-[#B0413E] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50">
+                    {busy ? 'Sending…' : 'Send report to AniLink team'}
+                  </button>
+                </form>
+              )}
+              {reportedIds.includes(o.id) && (
+                <div className="mt-3 text-xs text-[#4A7C59]">✓ Report sent — we'll update you on the outcome.</div>
+              )}
 
               {ratingOpenId === o.id && (
                 <form

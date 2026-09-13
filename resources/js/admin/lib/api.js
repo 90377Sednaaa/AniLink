@@ -46,4 +46,6 @@ export const api = {
   moderateUser: (id, payload) => apiFetch(`/admin/users/${id}`, { method: 'PATCH', body: payload }),
   analytics: () => apiFetch('/admin/analytics'),
   orders: (params = {}) => apiFetch(`/admin/orders?${qs(params)}`),
+  reports: (params = {}) => apiFetch(`/admin/reports?${qs(params)}`),
+  handleReport: (id, status, note) => apiFetch(`/admin/reports/${id}`, { method: 'PATCH', body: { status, resolution_note: note } }),
 }

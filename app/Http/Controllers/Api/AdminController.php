@@ -7,6 +7,7 @@ use App\Models\FarmerProfile;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Report;
 use App\Models\User;
 use App\Services\ExpoPushService;
 use Illuminate\Http\Request;
@@ -217,6 +218,44 @@ class AdminController extends Controller
             'top_farmers' => $topFarmers,
             'gmv_by_category' => $gmvByCategory,
         ]);
+    }
+
+    // GET /api/admin/reports?status= — dispute/report queue (spec module 6)
+    public function reports(Request $request)
+    {
+        $request->validate(['status' => ['nullable', 'in:open,resolved,dismissed']]);
+
+        $q = Report::with(['reporter', 'reportedUser', 'order'])
+            ->when($request->status, fn ($qq) => $qq->where('status', $request->status))
+            ->latest();
+
+        return $q->paginate($request->get('per_page', 15));
+    }
+
+    // PATCH /api/admin/reports/{report} — resolve or dismiss with a note; the
+    // reporter is always told the outcome
+    public function handleReport(Request $request, Report $report)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:resolved,dismissed'],
+            'resolution_note' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $report->update([
+            'status' => $validated['status'],
+            'resolution_note' => $validated['resolution_note'] ?? null,
+            'resolved_by' => $request->user()->id,
+        ]);
+
+        Notification::create([
+            'user_id' => $report->reporter_id,
+            'type' => 'report_'.$validated['status'],
+            'title' => $validated['status'] === 'resolved' ? 'Your report was resolved' : 'Your report was reviewed',
+            'body' => $validated['resolution_note'] ?? "Your {$report->category} report was {$validated['status']}.",
+            'is_read' => false,
+        ]);
+
+        return response()->json(['message' => "Report {$validated['status']}.", 'data' => $report->fresh()->load(['reporter', 'reportedUser', 'order'])]);
     }
 
     // GET /api/admin/orders?status=&per_page= — for dispute/moderation

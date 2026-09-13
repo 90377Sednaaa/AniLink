@@ -8,6 +8,7 @@ import Analytics from './pages/Analytics'
 import Verifications from './pages/Verifications'
 import Listings from './pages/Listings'
 import Users from './pages/Users'
+import Reports from './pages/Reports'
 
 const qc = new QueryClient()
 
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/verifications" element={<RequireAdmin><Layout><Verifications /></Layout></RequireAdmin>} />
             <Route path="/listings" element={<RequireAdmin><Layout><Listings /></Layout></RequireAdmin>} />
             <Route path="/users" element={<RequireAdmin><Layout><Users /></Layout></RequireAdmin>} />
+            <Route path="/reports" element={<RequireAdmin><Layout><Reports /></Layout></RequireAdmin>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

@@ -10,6 +10,7 @@ use App\Models\PriceTrend;
 use App\Models\Product;
 use App\Models\QuoteRequest;
 use App\Models\Region;
+use App\Models\Report;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -284,6 +285,32 @@ class AniMarketSeeder extends Seeder
                     'status' => 'quoted',
                     'quoted_unit_price' => 1180,
                     'response_note' => 'For 10+ sacks, ₱1,180/sack locked for 2 weeks.',
+                ]);
+            }
+        }
+
+        // Demo dispute reports (admin queue)
+        if (Report::count() === 0) {
+            $admin = User::where('email', 'admin@anilink.test')->first();
+            $demoBuyer = User::where('email', 'buyer@anilink.test')->first();
+            $completedOrder = Order::where('status', 'completed')->first();
+            if ($demoBuyer && $completedOrder) {
+                Report::create([
+                    'reporter_id' => $demoBuyer->id,
+                    'order_id' => $completedOrder->id,
+                    'category' => 'order_issue',
+                    'description' => 'Some tomatoes arrived bruised - the box was crushed on one side.',
+                    'status' => 'open',
+                ]);
+            }
+            if ($admin && $demoBuyer) {
+                Report::create([
+                    'reporter_id' => $demoBuyer->id,
+                    'category' => 'other',
+                    'description' => 'Tested the report flow end to end.',
+                    'status' => 'dismissed',
+                    'resolution_note' => 'No violation found - closing.',
+                    'resolved_by' => $admin->id,
                 ]);
             }
         }

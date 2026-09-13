@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PredictController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PushTokenController;
 use App\Http\Controllers\Api\QuoteController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\TwoFactorController;
 use App\Models\Category;
@@ -67,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders/{order}', [OrderController::class, 'show']);
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
         Route::post('/orders/{order}/review', [ReviewController::class, 'store']);
+        Route::post('/reports', [ReportController::class, 'store']);
         Route::post('/cart/validate', [OrderController::class, 'validateCart']);
 
         // Buyer routes (both individual and business can shop, but business has bulk quotes)
@@ -93,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::patch('/admin/listings/{product}', [AdminController::class, 'moderateListing']);
             Route::get('/admin/analytics', [AdminController::class, 'analytics']);
             Route::get('/admin/orders', [AdminController::class, 'orders']);
+            Route::get('/admin/reports', [AdminController::class, 'reports']);
+            Route::patch('/admin/reports/{report}', [AdminController::class, 'handleReport']);
         });
 
         // Expo push token — tied to notifications table

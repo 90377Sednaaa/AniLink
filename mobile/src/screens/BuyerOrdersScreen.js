@@ -67,6 +67,12 @@ export default function BuyerOrdersScreen() {
             <View style={s.head}><Text style={s.orderId}>Order #{item.id}</Text><StatusChip status={item.status} /></View>
             <Text style={s.meta}>{item.order_type === 'bulk' ? 'Bulk' : 'Retail'} • {item.fulfillment_type} • {peso(Number(item.total_amount))}</Text>
             <Text style={s.meta}>{new Date(item.created_at).toLocaleString('en-PH')}</Text>
+            <Pressable
+              onPress={() => navigation.navigate('Report', { orderId: item.id, subjectLabel: `Order #${item.id}` })}
+              style={s.reportBtn}
+            >
+              <Text style={s.reportBtnText}>⚠ Report problem</Text>
+            </Pressable>
             {item.status === 'completed' && item.farmer && (
               <Pressable
                 onPress={() => navigation.navigate('Review', { orderId: item.id, farmerName: item.farmer?.farm_name || item.farmer?.name || 'Farmer' })}
@@ -99,6 +105,8 @@ const s = StyleSheet.create({
   quotesBtnText: { fontSize: 12, fontFamily: 'Poppins_600SemiBold', color: colors.textPrimary },
   meta: { ...typography.caption, color: colors.textMuted },
   rateBtn: { height: 40, borderRadius: radius.pill, backgroundColor: colors.harvestGoldLight, borderWidth: 1, borderColor: '#F2D98A', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
+  reportBtn: { height: 36, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start', paddingHorizontal: 12, marginTop: 2 },
+  reportBtnText: { ...typography.caption, color: colors.textMuted },
   rateBtnText: { ...typography.caption, fontFamily: 'Poppins_600SemiBold', color: colors.harvestGoldDark },
   empty: { padding: 32, alignItems: 'center' },
   emptyText: { ...typography.body, color: colors.textMuted },

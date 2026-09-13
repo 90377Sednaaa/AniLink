@@ -20,6 +20,7 @@ import ReviewScreen from '../screens/ReviewScreen';
 import QuoteRequestScreen from '../screens/QuoteRequestScreen';
 import BuyerQuotesScreen from '../screens/BuyerQuotesScreen';
 import FarmerQuotesScreen from '../screens/FarmerQuotesScreen';
+import ReportScreen from '../screens/ReportScreen';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import AdminVerificationsScreen from '../screens/admin/AdminVerificationsScreen';
 import AdminListingsScreen from '../screens/admin/AdminListingsScreen';
@@ -117,6 +118,7 @@ export default function AppNavigator() {
       <RootStack.Screen name="QuoteRequest" component={QuoteRequestScreen} options={{ presentation: 'card' }} />
       <RootStack.Screen name="BuyerQuotes" component={BuyerQuotesScreen} options={{ presentation: 'card' }} />
       <RootStack.Screen name="FarmerQuotes" component={FarmerQuotesScreen} options={{ presentation: 'card' }} />
+      <RootStack.Screen name="Report" component={ReportScreen} options={{ presentation: 'card' }} />
     </RootStack.Navigator>
   );
 }
