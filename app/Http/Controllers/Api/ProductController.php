@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\InventoryLog;
+use App\Models\Notification;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Services\ExpoPushService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -258,6 +260,8 @@ class ProductController extends Controller
             'reason' => ['nullable', 'in:sale,restock,adjustment'],
         ]);
 
+        $previousQuantity = (float) $product->available_quantity;
+
         $product->available_quantity = max(0, $product->available_quantity + $validated['change_amount']);
         if ($product->available_quantity == 0) {
             $product->status = 'sold_out';
@@ -272,6 +276,26 @@ class ProductController extends Controller
             'reason' => $validated['reason'] ?? 'adjustment',
             'created_by' => $request->user()->id,
         ]);
+
+        // Low-stock alert fires only on the tap that CROSSES the threshold —
+        // one heads-up per dip instead of one per stock tap; restocking above
+        // the threshold re-arms it.
+        if ($previousQuantity > Product::LOW_STOCK_THRESHOLD && $product->available_quantity <= Product::LOW_STOCK_THRESHOLD) {
+            $notification = Notification::create([
+                'user_id' => $request->user()->id,
+                'type' => 'low_stock',
+                'title' => (float) $product->available_quantity === 0.0 ? "{$product->name} is sold out" : "Low stock: {$product->name}",
+                'body' => (float) $product->available_quantity === 0.0
+                    ? "You've sold out of {$product->name}. Restock to keep the listing live."
+                    : "Only {$product->available_quantity} {$product->unit_type} of {$product->name} left. Restock soon.",
+                'is_read' => false,
+            ]);
+
+            try {
+                ExpoPushService::sendForNotification($notification);
+            } catch (\Throwable $e) {
+            }
+        }
 
         return response()->json(['message' => 'Stock updated.', 'data' => $this->transformProduct($product->fresh(['category', 'images', 'farmer.farmerProfile']))]);
     }

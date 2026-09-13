@@ -39,6 +39,7 @@ export const api = {
   login: (email, password) => apiFetch('/login', { method: 'POST', body: { email, password }, auth: false }),
   me: () => apiFetch('/me'),
   farmerProducts: (params = {}) => apiFetch(`/farmer/products?${qs(params)}`),
+  dashboard: () => apiFetch('/farmer/dashboard'),
   adjustStock: (id, changeAmount, reason = 'adjustment') => apiFetch(`/products/${id}/stock`, { method: 'PATCH', body: { change_amount: changeAmount, reason } }),
   updateProduct: (id, payload) => apiFetch(`/products/${id}`, { method: 'PUT', body: payload }),
   createProduct: (payload) => {

@@ -27,18 +27,20 @@ export default function Inventory() {
   const [formError, setFormError] = useState(null)
 
   const { data: prodRes, isLoading, error } = useQuery({ queryKey: ['farmer-products'], queryFn: () => api.farmerProducts() })
-  const { data: ordersRes } = useQuery({ queryKey: ['farmer-orders'], queryFn: () => api.orders() })
+  // Real SQL aggregates from /farmer/dashboard — the old client-side math over the
+  // first page of orders quietly dropped older sales from the totals.
+  const { data: dash } = useQuery({ queryKey: ['farmer-dashboard'], queryFn: () => api.dashboard() })
   const { data: cats } = useQuery({ queryKey: ['categories'], queryFn: () => api.categories() })
   const categories = Array.isArray(cats) ? cats : (cats?.data ?? [])
 
   const products = prodRes?.data ?? prodRes ?? []
   const orders = Array.isArray(ordersRes?.data) ? ordersRes.data : (ordersRes ?? [])
 
-  const lowStock = products.filter(p => Number(p.available_quantity) <= 5 && p.status !== 'archived')
-  const todayStr = new Date().toDateString()
-  const daily = orders.filter(o => new Date(o.created_at).toDateString() === todayStr && o.status !== 'cancelled').reduce((s,o)=>s+Number(o.total_amount||0),0)
-  const weekly = orders.filter(o => new Date(o.created_at).getTime() > Date.now()-7*86400000 && o.status!=='cancelled').reduce((s,o)=>s+Number(o.total_amount||0),0)
-  const pending = orders.filter(o=>o.status==='pending').length
+  const lowStock = dash?.low_stock ?? []
+  const daily = dash?.sales?.today?.revenue ?? 0
+  const weekly = dash?.sales?.week?.revenue ?? 0
+  const itemsSold = dash?.sales?.week?.items_sold ?? 0
+  const pending = dash?.pending_orders ?? 0
 
   const adjust = useMutation({
     mutationFn: ({ id, delta }) => api.adjustStock(id, delta, delta>0 ? 'restock' : 'adjustment'),
@@ -54,12 +56,12 @@ export default function Inventory() {
       return { prev }
     },
     onError: (_e, _v, ctx) => { if (ctx?.prev) qc.setQueryData(['farmer-products'], ctx.prev) },
-    onSettled: () => { setUpdating(null); qc.invalidateQueries({ queryKey: ['farmer-products'] }) },
+    onSettled: () => { setUpdating(null); qc.invalidateQueries({ queryKey: ['farmer-products'] }); qc.invalidateQueries({ queryKey: ['farmer-dashboard'] }) },
   })
 
   const toggleSoldOut = useMutation({
     mutationFn: ({ id, soldOut }) => soldOut ? api.updateProduct(id, { status: 'archived' }) : api.adjustStock(id, 10, 'restock'),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['farmer-products'] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['farmer-products'] }); qc.invalidateQueries({ queryKey: ['farmer-dashboard'] }) },
   })
 
   const create = useMutation({
@@ -182,7 +184,7 @@ export default function Inventory() {
             <span className="w-8 h-8 rounded-full bg-[#E8F0E9] text-[#2E5339] grid place-items-center shrink-0"><Icon name="orders" className="w-4 h-4" /></span>
           </div>
           <div className="mt-1 text-xl font-semibold">{fmtPeso(weekly)}</div>
-          <div className="text-xs text-[#8A8A8A]">Last 7 days of sales</div>
+          <div className="text-xs text-[#8A8A8A]">{itemsSold} items sold · last 7 days</div>
         </div>
         <div className="bg-[#FFF4D6] rounded-[12px] border border-[#F2D98A] p-5">
           <div className="flex items-center justify-between gap-2">

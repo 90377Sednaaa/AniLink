@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FarmerDashboardController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\ProductController;
@@ -51,8 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::patch('/products/{product}/stock', [ProductController::class, 'adjustStock']);
             Route::get('/farmer/products', [ProductController::class, 'myProducts']);
             Route::post('/farmer/verification-doc', [AuthController::class, 'uploadVerificationDoc']);
-            Route::get('/farmer/dashboard', fn () => response()->json(['message' => 'Farmer dashboard', 'role' => 'farmer']));
-            Route::get('/farmer/orders', fn () => response()->json(['message' => 'Farmer order queue']));
+            Route::get('/farmer/dashboard', [FarmerDashboardController::class, 'index']);
         });
 
         // ── Orders / Cart / Checkout — Buyer + Farmer shared ──
