@@ -10,6 +10,11 @@ export default function Orders() {
   const [params] = useSearchParams()
   const [status, setStatus] = useState('all')
   const [cancellingId, setCancellingId] = useState(null)
+  const [ratingOpenId, setRatingOpenId] = useState(null)
+  const [rating, setRating] = useState(5)
+  const [comment, setComment] = useState('')
+  const [ratedIds, setRatedIds] = useState([])
+  const [busy, setBusy] = useState(false)
   const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
@@ -30,6 +35,21 @@ export default function Orders() {
       alert(err.message || 'Could not cancel order')
     } finally {
       setCancellingId(null)
+    }
+  }
+
+  const submitReview = async (id) => {
+    setBusy(true)
+    try {
+      await api.reviewOrder(id, { rating, comment: comment || null })
+      setRatedIds(ids => [...ids, id])
+      setRatingOpenId(null)
+      setComment('')
+      qc.invalidateQueries({ queryKey: ['orders'] })
+    } catch (err) {
+      alert(err.message || 'Could not submit review')
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -87,16 +107,58 @@ export default function Orders() {
 
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F0EDE6]">
                 <div className="text-lg font-bold text-[#2E5339]">{peso(o.total_amount)}</div>
-                {o.status === 'pending' && (
-                  <button
-                    onClick={() => cancel(o.id)}
-                    disabled={cancellingId === o.id}
-                    className="text-xs font-semibold px-3 py-2 rounded-[10px] border border-[#E5B9B6] text-[#B0413E] hover:bg-[#F6E3E2] disabled:opacity-50"
-                  >
-                    {cancellingId === o.id ? 'Cancelling…' : 'Cancel order'}
-                  </button>
-                )}
+                <div className="flex items-center gap-2">
+                  {o.status === 'completed' && !ratedIds.includes(o.id) && (
+                    <button
+                      onClick={() => setRatingOpenId(ratingOpenId === o.id ? null : o.id)}
+                      className="text-xs font-semibold px-3 py-2 rounded-[10px] bg-[#FFF4D6] border border-[#F2D98A] text-[#8A6A0A] hover:brightness-105"
+                    >
+                      {ratingOpenId === o.id ? 'Close' : '★ Rate farmer'}
+                    </button>
+                  )}
+                  {o.status === 'completed' && ratedIds.includes(o.id) && (
+                    <span className="text-xs text-[#4A7C59] font-semibold">✓ Review submitted</span>
+                  )}
+                  {o.status === 'pending' && (
+                    <button
+                      onClick={() => cancel(o.id)}
+                      disabled={cancellingId === o.id}
+                      className="text-xs font-semibold px-3 py-2 rounded-[10px] border border-[#E5B9B6] text-[#B0413E] hover:bg-[#F6E3E2] disabled:opacity-50"
+                    >
+                      {cancellingId === o.id ? 'Cancelling…' : 'Cancel order'}
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {ratingOpenId === o.id && (
+                <form
+                  onSubmit={(e) => { e.preventDefault(); submitReview(o.id) }}
+                  className="mt-3 bg-[#FAF8F3] border border-[#F0EDE6] rounded-[12px] p-4 space-y-3"
+                >
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button key={n} type="button" onClick={() => setRating(n)}
+                        className={`text-2xl transition ${n <= rating ? 'text-[#D4A017]' : 'text-[#E8E2D6]'}`}
+                        aria-label={`${n} star${n > 1 ? 's' : ''}`}>★</button>
+                    ))}
+                    <span className="text-xs text-[#8A8A8A] ml-2">{['Poor', 'Fair', 'Good', 'Very good', 'Excellent'][rating - 1]}</span>
+                  </div>
+                  <textarea
+                    rows={2}
+                    placeholder="How was the produce and the farmer? (optional)"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="w-full border border-[#E8E2D6] bg-white rounded-[12px] px-3 py-2 text-sm focus:outline-none focus:border-[#2E5339]"
+                  />
+                  <button
+                    disabled={busy}
+                    className="w-full py-2.5 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50"
+                  >
+                    {busy ? 'Submitting…' : 'Submit review'}
+                  </button>
+                </form>
+              )}
             </div>
           ))}
         </div>

@@ -34,7 +34,13 @@ class ProductController extends Controller
         ]);
 
         $query = Product::query()
-            ->with(['farmer.farmerProfile', 'category', 'images'])
+            ->with([
+                'farmer' => fn ($q) => $q->with(['farmerProfile'])
+                    ->withCount('reviewsReceived')
+                    ->withAvg('reviewsReceived', 'rating'),
+                'category',
+                'images',
+            ])
             ->withCount('orderItems')
             ->where('status', $request->get('status', 'available'));
 
@@ -105,7 +111,13 @@ class ProductController extends Controller
         if ($product->status === 'archived') {
             abort(404);
         }
-        $product->load(['farmer.farmerProfile', 'category', 'images'])->loadCount('orderItems');
+        $product->load([
+            'farmer' => fn ($q) => $q->with(['farmerProfile'])
+                ->withCount('reviewsReceived')
+                ->withAvg('reviewsReceived', 'rating'),
+            'category',
+            'images',
+        ])->loadCount('orderItems');
 
         return response()->json(['data' => $this->transformProduct($product, true)]);
     }
@@ -276,6 +288,7 @@ class ProductController extends Controller
         $farmer = $p->farmer;
         $profile = $farmer?->farmerProfile;
         $primaryImage = $p->images->firstWhere('is_primary', true) ?? $p->images->first();
+        $farmerRating = $farmer?->reviews_received_avg_rating !== null ? round((float) $farmer->reviews_received_avg_rating, 2) : null;
         $base = [
             'id' => $p->id,
             'name' => $p->name,
@@ -300,9 +313,11 @@ class ProductController extends Controller
                 'province' => $profile?->province,
                 'verified' => $profile?->verification_status === 'approved',
                 'verification_status' => $profile?->verification_status,
+                'rating_avg' => $farmerRating,
+                'rating_count' => $farmer?->reviews_received_count ?? null,
                 'distance_km' => null, // Filled by client or future geo; distance sort uses municipality alphabetical for now
             ] : null,
-            'rating' => 4.7, // placeholder until per-farmer reviews are surfaced on listings
+            'rating' => $farmerRating, // real farmer average, replacing the old hardcoded placeholder
             'reviews' => $p->order_items_count ?? $p->orderItems()->count(),
             'created_at' => $p->created_at,
         ];

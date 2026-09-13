@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import { radius, spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
@@ -11,6 +12,7 @@ import { peso } from '../utils/format';
 
 export default function BuyerOrdersScreen() {
   const { token, login } = useAuth();
+  const navigation = useNavigation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -60,6 +62,14 @@ export default function BuyerOrdersScreen() {
             <View style={s.head}><Text style={s.orderId}>Order #{item.id}</Text><StatusChip status={item.status} /></View>
             <Text style={s.meta}>{item.order_type === 'bulk' ? 'Bulk' : 'Retail'} • {item.fulfillment_type} • {peso(Number(item.total_amount))}</Text>
             <Text style={s.meta}>{new Date(item.created_at).toLocaleString('en-PH')}</Text>
+            {item.status === 'completed' && item.farmer && (
+              <Pressable
+                onPress={() => navigation.navigate('Review', { orderId: item.id, farmerName: item.farmer?.farm_name || item.farmer?.name || 'Farmer' })}
+                style={s.rateBtn}
+              >
+                <Text style={s.rateBtnText}>★ Rate farmer</Text>
+              </Pressable>
+            )}
           </View>
         )}
         ListEmptyComponent={<View style={s.empty}><Text style={s.emptyText}>No orders yet — add from AniMarket.</Text></View>}
@@ -81,6 +91,8 @@ const s = StyleSheet.create({
   head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   orderId: { ...typography.bodyMedium, color: colors.textPrimary },
   meta: { ...typography.caption, color: colors.textMuted },
+  rateBtn: { height: 40, borderRadius: radius.pill, backgroundColor: colors.harvestGoldLight, borderWidth: 1, borderColor: '#F2D98A', alignItems: 'center', justifyContent: 'center', marginTop: 4 },
+  rateBtnText: { ...typography.caption, fontFamily: 'Poppins_600SemiBold', color: colors.harvestGoldDark },
   empty: { padding: 32, alignItems: 'center' },
   emptyText: { ...typography.body, color: colors.textMuted },
 });

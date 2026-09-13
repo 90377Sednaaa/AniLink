@@ -55,6 +55,9 @@ export const api = {
   createOrder: (payload) => apiFetch('/orders', { method: 'POST', body: payload }),
   orders: (params = {}) => apiFetch(`/orders?${qs(params)}`),
   updateOrderStatus: (id, status, note) => apiFetch(`/orders/${id}/status`, { method: 'PATCH', body: { status, note } }),
+  reviewOrder: (id, payload) => apiFetch(`/orders/${id}/review`, { method: 'POST', body: payload }),
+
+  farmerReviews: (farmerId) => apiFetch(`/farmers/${farmerId}/reviews`, { auth: false }),
 
   notifications: () => apiFetch('/notifications'),
   unreadCount: () => apiFetch('/notifications/unread-count'),

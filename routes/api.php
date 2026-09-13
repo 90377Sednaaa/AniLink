@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PushTokenController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\TwoFactorController;
 use App\Models\Category;
 use App\Models\Notification;
@@ -49,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/products/{product}', [ProductController::class, 'destroy']);
             Route::patch('/products/{product}/stock', [ProductController::class, 'adjustStock']);
             Route::get('/farmer/products', [ProductController::class, 'myProducts']);
+            Route::post('/farmer/verification-doc', [AuthController::class, 'uploadVerificationDoc']);
             Route::get('/farmer/dashboard', fn () => response()->json(['message' => 'Farmer dashboard', 'role' => 'farmer']));
             Route::get('/farmer/orders', fn () => response()->json(['message' => 'Farmer order queue']));
         });
@@ -58,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders', [OrderController::class, 'index']);
         Route::get('/orders/{order}', [OrderController::class, 'show']);
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
+        Route::post('/orders/{order}/review', [ReviewController::class, 'store']);
         Route::post('/cart/validate', [OrderController::class, 'validateCart']);
 
         // Buyer routes (both individual and business can shop, but business has bulk quotes)
@@ -73,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Admin routes (verification, moderation, analytics) — real controllers per spec
         Route::middleware('role:admin')->group(function () {
             Route::get('/admin/verifications', [AdminController::class, 'verifications']);
+            Route::get('/admin/verifications/{farmerProfile}/document', [AdminController::class, 'document']);
             Route::post('/admin/verifications/{farmerProfile}/decision', [AdminController::class, 'decideVerification']);
             Route::get('/admin/users', [AdminController::class, 'users']);
             Route::patch('/admin/users/{user}', [AdminController::class, 'moderateUser']);
@@ -110,6 +114,7 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/categories', function () {
     return response()->json(Category::orderBy('name')->get(['id', 'name', 'slug']));
 });
+Route::get('/farmers/{farmer}/reviews', [ReviewController::class, 'forFarmer']);
 
 // Health check for API
 Route::get('/health', fn () => response()->json(['status' => 'ok', 'service' => 'AniLink API', 'version' => '1.0']));

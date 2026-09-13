@@ -54,7 +54,7 @@ export default function ProductDetailScreen({ route, navigation }) {
               <View style={{ flex: 1 }}>
                 <View style={s.farmerNameRow}><Text style={s.farmerName}>{product.farmer.name}</Text>{product.farmer.verified && <View style={s.verified}><Text style={s.verifiedText}>✓ Verified</Text></View>}</View>
                 <Text style={s.farmerFarm}>{product.farmer.farm_name} • {product.farmer.barangay}, {product.farmer.municipality}</Text>
-                <Text style={s.farmerMeta}>★ {product.rating.toFixed(1)} · {product.reviews} reviews • {product.farmer.distance_km} km away</Text>
+                <Text style={s.farmerMeta}>{product.rating ? `★ ${Number(product.rating).toFixed(1)}` : 'No reviews yet'} • {product.reviews} sold{product.farmer.distance_km != null ? ` • ${product.farmer.distance_km} km away` : ''}</Text>
               </View>
             </View>
             <TrustBadgeRow />
