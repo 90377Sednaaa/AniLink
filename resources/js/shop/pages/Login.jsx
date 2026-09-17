@@ -31,14 +31,20 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-sm bg-white border border-[#E8E2D6] rounded-[16px] p-6">
-        <h1 className="text-xl font-semibold">Sign in to AniMarket</h1>
-        <p className="text-sm text-[#5C5C5C] mt-1">
-          {pendingToken ? 'Enter the 6-digit code we sent you.' : 'Buyers, farmers, and admins all sign in here.'}
-        </p>
+    <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-8">
+      <div className="w-full max-w-sm bg-white border border-[#E8E2D6] rounded-2xl p-6 sm:p-7 shadow-sm">
+        <div className="text-center mb-5">
+          <Link to="/" className="inline-flex items-center gap-2 mb-3">
+            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-9 h-9 rounded-xl shadow-sm" />
+            <span className="font-bold text-lg text-[#1A1A1A]">AniMarket</span>
+          </Link>
+          <h1 className="text-xl font-bold tracking-tight text-[#1A1A1A]">Sign In</h1>
+          <p className="text-xs text-[#5C5C5C] mt-1">
+            {pendingToken ? 'Enter the 6-digit code sent to your email.' : 'Sign in to access your orders and basket.'}
+          </p>
+        </div>
 
-        <form onSubmit={submit} className="mt-5 space-y-3">
+        <form onSubmit={submit} className="space-y-3.5">
           {pendingToken ? (
             <input
               value={code}
@@ -46,17 +52,17 @@ export default function Login() {
               placeholder="123456"
               inputMode="numeric"
               autoFocus
-              className="w-full text-center text-2xl tracking-[0.4em] border border-[#E8E2D6] rounded-[12px] px-4 py-3 focus:outline-none focus:border-[#2E5339]"
+              className="w-full text-center text-2xl tracking-[0.4em] border border-[#E8E2D6] bg-[#FAF8F3] rounded-xl px-4 py-3 focus:outline-none focus:border-[#2E5339] focus:bg-white transition"
             />
           ) : (
             <>
               <input
                 type="email"
                 required
-                placeholder="Email"
+                placeholder="Email address"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full border border-[#E8E2D6] rounded-[12px] px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339]"
+                className="w-full border border-[#E8E2D6] bg-[#FAF8F3] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339] focus:bg-white transition"
               />
               <input
                 type="password"
@@ -64,29 +70,46 @@ export default function Login() {
                 placeholder="Password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-[#E8E2D6] rounded-[12px] px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339]"
+                className="w-full border border-[#E8E2D6] bg-[#FAF8F3] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339] focus:bg-white transition"
               />
             </>
           )}
 
-          {error && <div className="text-sm text-[#B0413E] bg-[#F6E3E2] border border-[#E5B9B6] rounded-[10px] px-3 py-2">{error}</div>}
+          {error && (
+            <div className="text-xs text-[#B0413E] bg-[#F6E3E2] border border-[#E5B9B6] rounded-xl px-3.5 py-2.5">
+              {error}
+            </div>
+          )}
 
           <button
+            type="submit"
             disabled={busy}
-            className="w-full py-3 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50"
+            className="w-full py-3 rounded-xl bg-[#2E5339] text-white text-sm font-semibold hover:bg-[#24412D] transition shadow-sm disabled:opacity-50"
           >
-            {busy ? 'Please wait…' : pendingToken ? 'Verify code' : 'Sign in'}
+            {busy ? 'Please wait…' : pendingToken ? 'Verify Code' : 'Sign In'}
           </button>
         </form>
 
         {!pendingToken && (
-          <p className="text-xs text-[#5C5C5C] mt-4 text-center">
-            New here? <Link to="/register" className="text-[#2E5339] font-semibold underline">Create a buyer account</Link>
-            <span className="mx-1.5">·</span>
-            <Link to="/forgot-password" className="text-[#2E5339] font-semibold underline">Forgot password?</Link>
-          </p>
+          <div className="mt-5 pt-4 border-t border-[#E8E2D6]/80 text-center space-y-2">
+            <p className="text-xs text-[#5C5C5C]">
+              New to AniLink?{' '}
+              <Link to="/register" className="text-[#2E5339] font-bold hover:underline">
+                Create an account
+              </Link>
+            </p>
+            <div>
+              <Link to="/forgot-password" className="text-xs text-[#8A8A8A] hover:text-[#2E5339] transition">
+                Forgot your password?
+              </Link>
+            </div>
+          </div>
         )}
       </div>
+
+      <Link to="/" className="text-xs text-[#8A8A8A] hover:text-[#2E5339] mt-5 transition">
+        ← Return to Marketplace
+      </Link>
     </div>
   )
 }

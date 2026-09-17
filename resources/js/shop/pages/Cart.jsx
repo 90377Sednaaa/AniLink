@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import { useCart } from '../lib/cart'
 import { useAuth } from '../lib/auth'
 import { peso } from '../components/format'
+import { Icon } from '../../shared/ui'
 
 export default function Cart() {
   const { user } = useAuth()
@@ -11,82 +12,171 @@ export default function Cart() {
 
   const { data } = useQuery({
     queryKey: ['cart-validate', items],
-    queryFn: () => api.validateCart(
-      items.map(i => ({ product_id: i.product_id, quantity: i.qty })),
-      'retail',
-    ),
+    queryFn: () =>
+      api.validateCart(
+        items.map((i) => ({ product_id: i.product_id, quantity: i.qty })),
+        'retail'
+      ),
     enabled: !!user && items.length > 0,
     refetchInterval: 15000,
   })
 
-  const validated = Object.fromEntries((data?.items ?? []).map(i => [i.product_id, i]))
+  const validated = Object.fromEntries((data?.items ?? []).map((i) => [i.product_id, i]))
   const subtotal = data?.subtotal ?? items.reduce((n, i) => n + i.price * i.qty, 0)
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-20">
-        <div className="text-5xl mb-4">🧺</div>
-        <h1 className="text-lg font-semibold">Your basket is empty</h1>
-        <p className="text-sm text-[#5C5C5C] mt-1">Fresh harvests are waiting at the market.</p>
-        <Link to="/" className="inline-block mt-4 px-5 py-2.5 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110">Browse AniMarket</Link>
+      <div className="max-w-md mx-auto text-center py-20 bg-white border border-[#E8E2D6] rounded-2xl p-8 my-8 shadow-sm">
+        <div className="w-14 h-14 mx-auto rounded-full bg-[#E8F0E9] text-[#2E5339] flex items-center justify-center mb-4">
+          <Icon name="cart" className="w-7 h-7" />
+        </div>
+        <h1 className="text-xl font-bold text-[#1A1A1A]">Your shopping basket is empty</h1>
+        <p className="text-sm text-[#5C5C5C] mt-1.5">
+          Fresh harvests from accredited local farms are ready for harvest.
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-[#2E5339] text-white text-xs font-semibold hover:bg-[#24412D] transition shadow-sm"
+        >
+          <span>Browse Marketplace</span>
+          <span>→</span>
+        </Link>
       </div>
     )
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
+    <div className="max-w-3xl mx-auto space-y-6 py-2">
+      {/* Header with Navigation */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Your basket</h1>
-        <button onClick={clear} className="text-xs text-[#B0413E] underline">Empty basket</button>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#1A1A1A]">Shopping Basket</h1>
+          <p className="text-xs text-[#5C5C5C] mt-0.5">
+            {items.length} produce item{items.length === 1 ? '' : 's'} in your order
+          </p>
+        </div>
+        <Link
+          to="/"
+          className="text-xs font-semibold text-[#2E5339] hover:text-[#24412D] transition inline-flex items-center gap-1"
+        >
+          <span>← Continue Shopping</span>
+        </Link>
       </div>
 
+      {/* Cart Items List */}
       <div className="space-y-3">
-        {items.map(item => {
+        {items.map((item) => {
           const v = validated[item.product_id]
+          const maxAvail = v ? v.available_quantity : null
+          const isOutOfStock = v && !v.available
+
           return (
-            <div key={item.product_id} className="bg-white border border-[#E8E2D6] rounded-[16px] p-4 flex items-center gap-4">
-              <div className="w-16 h-16 rounded-[12px] bg-[#F0EDE6] overflow-hidden shrink-0">
-                {item.image
-                  ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full flex items-center justify-center text-2xl">🌾</div>}
+            <div
+              key={item.product_id}
+              className="bg-white border border-[#E8E2D6] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm hover:border-[#C5D9C7] transition"
+            >
+              <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                <div className="w-16 h-16 rounded-xl bg-[#F4F1EA] overflow-hidden shrink-0 border border-[#E8E2D6]">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[#4A7C59]/60">
+                      <Icon name="sprout" className="w-6 h-6" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <Link
+                    to={`/products/${item.product_id}`}
+                    className="font-bold text-sm text-[#1A1A1A] hover:text-[#2E5339] transition truncate block"
+                  >
+                    {item.name}
+                  </Link>
+                  <div className="text-xs text-[#5C5C5C] mt-0.5">
+                    {peso(item.price)} <span className="text-[#8A8A8A]">/ {item.unit_type}</span>
+                  </div>
+                  {isOutOfStock && (
+                    <div className="text-xs text-[#B0413E] font-medium mt-1">
+                      Only {v.available_quantity} {item.unit_type} left in farm stock
+                    </div>
+                  )}
+                  {v?.bulk_eligible && (
+                    <div className="text-xs text-[#8A6A0A] font-medium mt-1">
+                      Bulk rate applied: {peso(v.unit_price)}/{item.unit_type}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-sm truncate">{item.name}</div>
-                <div className="text-xs text-[#5C5C5C]">{peso(item.price)}/{item.unit_type}</div>
-                {v && !v.available && (
-                  <div className="text-xs text-[#B0413E] mt-1">Only {v.available_quantity} {item.unit_type} left</div>
-                )}
-                {v?.bulk_eligible && (
-                  <div className="text-xs text-[#8A6A0A] mt-1">Bulk price applied — {peso(v.unit_price)}/{item.unit_type}</div>
-                )}
+              <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E8E2D6]/60">
+                {/* Stepper */}
+                <div className="flex items-center border border-[#E8E2D6] rounded-xl overflow-hidden bg-[#FAF8F3]">
+                  <button
+                    type="button"
+                    onClick={() => setQty(item.product_id, item.qty - 1)}
+                    className="w-8 h-8 flex items-center justify-center text-sm font-semibold hover:bg-white text-[#5C5C5C] transition"
+                    title={item.qty === 1 ? 'Remove item' : 'Decrease'}
+                  >
+                    −
+                  </button>
+                  <span className="w-10 text-center text-xs font-bold text-[#1A1A1A]">{item.qty}</span>
+                  <button
+                    type="button"
+                    disabled={maxAvail !== null && item.qty >= maxAvail}
+                    onClick={() => setQty(item.product_id, item.qty + 1)}
+                    className="w-8 h-8 flex items-center justify-center text-sm font-semibold hover:bg-white text-[#5C5C5C] disabled:opacity-30 disabled:cursor-not-allowed transition"
+                    title="Increase"
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* Subtotal */}
+                <div className="text-sm sm:text-base font-extrabold text-[#2E5339] min-w-[75px] text-right">
+                  {peso((v?.unit_price ?? item.price) * item.qty)}
+                </div>
+
+                {/* Remove item button */}
+                <button
+                  type="button"
+                  onClick={() => remove(item.product_id)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A8A8A] hover:text-[#B0413E] hover:bg-red-50 transition"
+                  title="Remove this produce"
+                >
+                  <Icon name="trash" className="w-4 h-4" />
+                </button>
               </div>
-
-              <div className="flex items-center border border-[#E8E2D6] rounded-[10px] overflow-hidden shrink-0">
-                <button onClick={() => setQty(item.product_id, item.qty - 1)} className="w-8 h-8 hover:bg-[#FAF8F3]">−</button>
-                <span className="w-10 text-center text-sm">{item.qty}</span>
-                <button onClick={() => setQty(item.product_id, item.qty + 1)} className="w-8 h-8 hover:bg-[#FAF8F3]">+</button>
-              </div>
-
-              <div className="text-sm font-bold text-[#2E5339] w-20 text-right shrink-0">{peso((v?.unit_price ?? item.price) * item.qty)}</div>
-
-              <button onClick={() => remove(item.product_id)} className="text-[#8A8A8A] hover:text-[#B0413E] shrink-0" title="Remove">✕</button>
             </div>
           )
         })}
       </div>
 
-      <div className="bg-white border border-[#E8E2D6] rounded-[16px] p-5 flex items-center justify-between">
+      {/* Cart Summary Card */}
+      <div className="bg-white border border-[#E8E2D6] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="text-xs text-[#8A8A8A]">Subtotal (validated by server every 15s)</div>
-          <div className="text-xl font-bold text-[#2E5339]">{peso(subtotal)}</div>
+          <div className="text-xs text-[#8A8A8A]">Estimated Subtotal</div>
+          <div className="text-2xl font-extrabold text-[#2E5339] tracking-tight">{peso(subtotal)}</div>
+          <div className="text-[11px] text-[#5C5C5C] mt-0.5">
+            Delivery and farmer fulfillment coordinated at checkout.
+          </div>
         </div>
-        <Link
-          to={user ? '/checkout' : '/login'}
-          className="px-6 py-3 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110"
-        >
-          {user ? 'Checkout' : 'Sign in to checkout'}
-        </Link>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={clear}
+            className="text-xs text-[#8A8A8A] hover:text-[#B0413E] px-3 py-2 transition"
+          >
+            Clear All
+          </button>
+          <Link
+            to={user ? '/checkout' : '/login'}
+            className="px-7 py-3 rounded-xl bg-[#2E5339] text-white text-sm font-semibold hover:bg-[#24412D] transition shadow-sm text-center"
+          >
+            {user ? 'Proceed to Checkout →' : 'Sign in to Checkout →'}
+          </Link>
+        </div>
       </div>
     </div>
   )
