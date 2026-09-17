@@ -139,33 +139,146 @@
                 </div>
             </section>
 
-            {{-- ===== Live Network Metrics Ribbon ===== --}}
-            <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-                <div class="bg-[#2E5339] rounded-2xl sm:rounded-3xl text-white p-6 sm:p-8 lg:p-10 shadow-[0_12px_32px_rgba(46,83,57,0.18)]">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                        <div>
-                            <div class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ number_format($liveListings) }}</div>
-                            <div class="text-sm text-white/80 mt-1 font-medium">harvest{{ $liveListings === 1 ? '' : 's' }} on the market now</div>
+            {{-- ===== Cinematic Philippine Farm Life & Interactive Impact Telemetry ===== --}}
+            <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+                <div class="relative rounded-[32px] overflow-hidden bg-[#1A2E20] text-white shadow-[0_24px_50px_rgba(26,46,32,0.25)] border border-[#2E5339]/50 min-h-[580px] lg:min-h-[660px] flex flex-col justify-between p-6 sm:p-10 lg:p-12">
+                    {{-- Background photography --}}
+                    <img src="/images/landing/philippines-farm-life.jpg" alt="Lush Philippine agricultural mountain terraces" class="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.03] transition-transform duration-1000 ease-out" />
+                    {{-- Scrim & gradient for perfect contrast and editorial depth --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#122317]/95 via-[#1A3021]/65 to-black/40 backdrop-blur-[0.5px]"></div>
+
+                    {{-- Top Deck: Editorial Brand Typography --}}
+                    <div class="relative z-10">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-[#F2D98A]">
+                                🇵🇭 Buhay Bukid · Philippine Agrarian Heritage
+                            </span>
+                            <span class="text-xs text-white/80 hidden sm:inline-block font-medium tracking-wide">
+                                Benguet · Nueva Ecija · Bukidnon · Davao
+                            </span>
                         </div>
-                        <div>
-                            <div class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ number_format($verifiedFarms) }}</div>
-                            <div class="text-sm text-white/80 mt-1 font-medium">verified farm{{ $verifiedFarms === 1 ? '' : 's' }}</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ number_format($farms) }}</div>
-                            <div class="text-sm text-white/80 mt-1 font-medium">farmer{{ $farms === 1 ? '' : 's' }} on AniLink</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl sm:text-4xl font-semibold tracking-tight">{{ number_format($ordersDelivered) }}</div>
-                            <div class="text-sm text-white/80 mt-1 font-medium">order{{ $ordersDelivered === 1 ? '' : 's' }} delivered</div>
+
+                        <div class="mt-8 sm:mt-12 max-w-2xl">
+                            <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08]">
+                                Real Hands.<br />
+                                Real Soil.<br />
+                                <span class="text-[#F2D98A]">Direct To Your Table.</span>
+                            </h2>
+                            <p class="mt-4 text-sm sm:text-base text-white/90 leading-relaxed max-w-xl font-normal">
+                                Behind every harvest on AniLink is a Filipino farming family working under the morning sun. We eliminate predatory middleman cuts so families get fresher food and local growers earn the dignity they deserve.
+                            </p>
                         </div>
                     </div>
-                    <div class="mt-8 pt-6 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-white/75">
-                        <span>Transparent origin tracking and cooperative oversight for every harvest.</span>
-                        <span class="text-white font-medium">Zero hidden commissions · 100% direct-to-farm payments</span>
+
+                    {{-- Bottom Deck: Interactive Telemetry & Story Tabs --}}
+                    <div class="relative z-10 mt-12 pt-6 border-t border-white/20">
+                        {{-- Interactive Tab Controls --}}
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="inline-flex p-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-xs font-semibold" role="tablist">
+                                <button type="button" id="tab-btn-stats" onclick="switchImpactTab('stats')" class="px-4 py-2 rounded-full bg-white text-[#1A1A1A] transition shadow-sm" role="tab" aria-selected="true">
+                                    Live Cooperative Metrics
+                                </button>
+                                <button type="button" id="tab-btn-middleman" onclick="switchImpactTab('middleman')" class="px-4 py-2 rounded-full text-white/80 hover:text-white transition" role="tab" aria-selected="false">
+                                    The Middleman Difference
+                                </button>
+                                <button type="button" id="tab-btn-voices" onclick="switchImpactTab('voices')" class="px-4 py-2 rounded-full text-white/80 hover:text-white transition" role="tab" aria-selected="false">
+                                    Farmer Story
+                                </button>
+                            </div>
+                            <span class="text-[11px] text-white/70 hidden md:inline-block">
+                                Click tabs to explore the cooperative's real-time impact
+                            </span>
+                        </div>
+
+                        {{-- Tab Panel 1: Live Cooperative Metrics --}}
+                        <div id="tab-panel-stats" class="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 transition-all duration-300">
+                            <div class="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 transition hover:-translate-y-0.5">
+                                <div class="text-3xl sm:text-4xl font-bold tracking-tight text-white">{{ number_format($liveListings) }}</div>
+                                <div class="text-xs font-semibold text-[#F2D98A] uppercase tracking-wider mt-1">Live Harvests</div>
+                                <div class="text-xs text-white/75 mt-0.5">Ready for harvest right now</div>
+                            </div>
+                            <div class="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 transition hover:-translate-y-0.5">
+                                <div class="text-3xl sm:text-4xl font-bold tracking-tight text-white">{{ number_format($verifiedFarms) }}</div>
+                                <div class="text-xs font-semibold text-[#F2D98A] uppercase tracking-wider mt-1">Verified Farms</div>
+                                <div class="text-xs text-white/75 mt-0.5">Accredited agrarian partners</div>
+                            </div>
+                            <div class="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 transition hover:-translate-y-0.5">
+                                <div class="text-3xl sm:text-4xl font-bold tracking-tight text-white">{{ number_format($farms) }}</div>
+                                <div class="text-xs font-semibold text-[#F2D98A] uppercase tracking-wider mt-1">Empowered Growers</div>
+                                <div class="text-xs text-white/75 mt-0.5">Smallholders on AniLink</div>
+                            </div>
+                            <div class="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 transition hover:-translate-y-0.5">
+                                <div class="text-3xl sm:text-4xl font-bold tracking-tight text-white">{{ number_format($ordersDelivered) }}</div>
+                                <div class="text-xs font-semibold text-[#F2D98A] uppercase tracking-wider mt-1">Orders Fulfilled</div>
+                                <div class="text-xs text-white/75 mt-0.5">Delivered direct to tables</div>
+                            </div>
+                        </div>
+
+                        {{-- Tab Panel 2: The Middleman Difference --}}
+                        <div id="tab-panel-middleman" class="mt-5 hidden grid md:grid-cols-2 gap-4 transition-all duration-300">
+                            <div class="bg-black/30 backdrop-blur-md border border-red-400/25 rounded-2xl p-5">
+                                <span class="text-xs font-semibold text-red-300 uppercase tracking-wider">Traditional Layered Trade</span>
+                                <h4 class="text-lg font-semibold text-white mt-1">Multi-Tiered Middlemen</h4>
+                                <ul class="mt-3 space-y-2 text-xs sm:text-sm text-white/80">
+                                    <li class="flex items-center gap-2"><span class="text-red-400 font-bold">✕</span> 40% to 60% of crop value lost to commission traders</li>
+                                    <li class="flex items-center gap-2"><span class="text-red-400 font-bold">✕</span> 3 to 5 days sitting in bodega heat before reaching stores</li>
+                                    <li class="flex items-center gap-2"><span class="text-red-400 font-bold">✕</span> Delayed farmer payouts with arbitrary deductions</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white/15 backdrop-blur-md border border-[#F2D98A]/40 rounded-2xl p-5">
+                                <span class="text-xs font-semibold text-[#F2D98A] uppercase tracking-wider">The AniLink Standard</span>
+                                <h4 class="text-lg font-semibold text-white mt-1">Direct Farm-to-Table Disintermediation</h4>
+                                <ul class="mt-3 space-y-2 text-xs sm:text-sm text-white">
+                                    <li class="flex items-center gap-2"><span class="text-[#F2D98A] font-bold">✓</span> 100% of agreed harvest price goes straight to the grower</li>
+                                    <li class="flex items-center gap-2"><span class="text-[#F2D98A] font-bold">✓</span> Harvested and fulfilled direct within 24 hours of ordering</li>
+                                    <li class="flex items-center gap-2"><span class="text-[#F2D98A] font-bold">✓</span> Guaranteed transparent escrow and immediate settlement</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {{-- Tab Panel 3: Farmer Story --}}
+                        <div id="tab-panel-voices" class="mt-5 hidden bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 transition-all duration-300">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div class="flex items-center gap-3.5">
+                                    <img src="/images/landing/farmer-avatar.jpg" alt="Mang Danilo" class="w-12 h-12 rounded-full object-cover border-2 border-[#F2D98A]" />
+                                    <div>
+                                        <h4 class="font-semibold text-base text-white">Mang Danilo Basilio</h4>
+                                        <p class="text-xs text-[#F2D98A]">Highland Vegetable Producer · Atok, Benguet</p>
+                                    </div>
+                                </div>
+                                <a href="/shop" class="inline-flex h-9 items-center px-4 rounded-full bg-[#D4A017] text-[#1A1A1A] font-semibold text-xs hover:brightness-105 transition">
+                                    Shop Mang Danilo's Harvest →
+                                </a>
+                            </div>
+                            <blockquote class="mt-4 text-sm sm:text-base italic text-white/90 leading-relaxed">
+                                “Bago nagkaroon ng AniLink, kahit anong presyo ang itakda ng biyahero sa bagsakan, wala kaming magawa. Ngayon, kami ang nagtatakda ng patas na presyo para sa aming ani. Bawat sako ng repolyo at pechay, alam naming diretso sa pamilyang Pilipino.”
+                            </blockquote>
+                        </div>
                     </div>
                 </div>
             </section>
+
+            <script>
+                function switchImpactTab(tab) {
+                    const tabs = ['stats', 'middleman', 'voices'];
+                    tabs.forEach(t => {
+                        const panel = document.getElementById('tab-panel-' + t);
+                        const btn = document.getElementById('tab-btn-' + t);
+                        if (!panel || !btn) return;
+                        if (t === tab) {
+                            panel.classList.remove('hidden');
+                            btn.classList.add('bg-white', 'text-[#1A1A1A]', 'shadow-sm');
+                            btn.classList.remove('text-white/80');
+                            btn.setAttribute('aria-selected', 'true');
+                        } else {
+                            panel.classList.add('hidden');
+                            btn.classList.remove('bg-white', 'text-[#1A1A1A]', 'shadow-sm');
+                            btn.classList.add('text-white/80');
+                            btn.setAttribute('aria-selected', 'false');
+                        }
+                    });
+                }
+            </script>
 
             {{-- ===== The Two Clear Pathways (Buyers vs Farmers) ===== --}}
             <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
