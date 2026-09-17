@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
-import { Icon } from '../../shared/ui'
+import { Icon, NotificationSkeleton } from '../../shared/ui'
 
 export default function Notifications() {
   const qc = useQueryClient()
@@ -43,11 +43,7 @@ export default function Notifications() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-20 bg-white border border-[#E8E2D6] rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <NotificationSkeleton count={4} />
       ) : notifications.length === 0 ? (
         <div className="text-center py-16 bg-white border border-[#E8E2D6] rounded-2xl p-8 shadow-sm">
           <div className="w-12 h-12 mx-auto rounded-full bg-[#E8F0E9] text-[#2E5339] flex items-center justify-center mb-3">

@@ -210,7 +210,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:confirmed,preparing,ready,delivered,completed,cancelled'],
+            'status' => ['required', 'in:pending,confirmed,preparing,ready,delivered,completed,cancelled'],
             'note' => ['nullable', 'string', 'max:500'],
         ]);
 
@@ -225,13 +225,14 @@ class OrderController extends Controller
         }
 
         // Enforce valid transitions per spec flow: pending->confirmed->preparing->ready->delivered/completed
+        // Farmers can advance fulfillment stages, cancel, or revert backwards 1 step if a mistake was made.
         // Terminal states (cancelled/completed) have no outgoing transitions.
         $allowed = [
             'pending' => ['confirmed', 'cancelled'],
-            'confirmed' => ['preparing', 'cancelled'],
-            'preparing' => ['ready', 'cancelled'],
-            'ready' => ['delivered', 'completed', 'cancelled'],
-            'delivered' => ['completed'],
+            'confirmed' => ['preparing', 'pending', 'cancelled'],
+            'preparing' => ['ready', 'confirmed', 'cancelled'],
+            'ready' => ['delivered', 'completed', 'preparing', 'cancelled'],
+            'delivered' => ['completed', 'ready'],
             'cancelled' => [],
             'completed' => [],
         ];

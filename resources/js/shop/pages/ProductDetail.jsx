@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useCart } from '../lib/cart'
 import { peso } from '../components/format'
-import { Icon } from '../../shared/ui'
+import { Icon, ProductDetailSkeleton } from '../../shared/ui'
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -20,20 +20,7 @@ export default function ProductDetail() {
   const p = data?.data
 
   if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto py-6">
-        <div className="h-6 w-32 bg-[#EFEAE0] rounded-lg animate-pulse mb-6" />
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="aspect-[4/3] bg-[#EFEAE0] rounded-2xl animate-pulse" />
-          <div className="space-y-4">
-            <div className="h-8 w-3/4 bg-[#EFEAE0] rounded-lg animate-pulse" />
-            <div className="h-6 w-1/4 bg-[#EFEAE0] rounded-lg animate-pulse" />
-            <div className="h-20 bg-[#EFEAE0] rounded-xl animate-pulse" />
-            <div className="h-12 bg-[#EFEAE0] rounded-xl animate-pulse" />
-          </div>
-        </div>
-      </div>
-    )
+    return <ProductDetailSkeleton />
   }
 
   if (isError || !p) {

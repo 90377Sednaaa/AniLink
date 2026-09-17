@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import ProductCard from '../components/ProductCard'
-import { Icon } from '../../shared/ui'
+import { Icon, ProductCardSkeleton } from '../../shared/ui'
 
 const sorts = [
   { value: 'fresh', label: 'Freshest Harvest' },
@@ -212,7 +212,7 @@ export default function Browse() {
         {isLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="aspect-[4/5] bg-white border border-[#E8E2D6] rounded-2xl animate-pulse" />
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : isError ? (

@@ -185,6 +185,31 @@ class OrderApiTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function test_farmer_can_revert_order_status_if_mistake_made(): void
+    {
+        $farmer = User::factory()->farmer()->create();
+        $order = Order::factory()->for($farmer, 'farmer')->create(['status' => 'pending']);
+
+        // Advance: pending -> confirmed -> preparing
+        $this->actingAs($farmer)
+            ->patchJson("/api/orders/{$order->id}/status", ['status' => 'confirmed'])
+            ->assertOk();
+        $this->actingAs($farmer)
+            ->patchJson("/api/orders/{$order->id}/status", ['status' => 'preparing'])
+            ->assertOk();
+
+        // Revert: preparing -> confirmed
+        $this->actingAs($farmer)
+            ->patchJson("/api/orders/{$order->id}/status", ['status' => 'confirmed'])
+            ->assertOk();
+
+        // Revert: confirmed -> pending
+        $this->actingAs($farmer)
+            ->patchJson("/api/orders/{$order->id}/status", ['status' => 'pending'])
+            ->assertOk();
+        $this->assertEquals('pending', $order->fresh()->status);
+    }
+
     public function test_terminal_states_have_no_outgoing_transitions_for_farmers(): void
     {
         $farmer = User::factory()->farmer()->create();

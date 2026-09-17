@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useState } from 'react'
-import { PageHeader, CardSkeleton, EmptyState, Chip, Icon } from '../../shared/ui'
+import { PageHeader, CardSkeleton, TableSkeleton, EmptyState, Chip, Icon } from '../../shared/ui'
 
 const ROLE_LABEL = { farmer: 'Farmer', buyer_individual: 'Buyer · Individual', buyer_business: 'Buyer · Business', admin: 'Admin' }
 
@@ -37,7 +37,7 @@ export default function Users() {
       </div>
 
       {isLoading ? (
-        <CardSkeleton rows={4} />
+        <TableSkeleton rows={5} />
       ) : rows.length === 0 ? (
         <EmptyState icon="users" title="No users found" hint="Try a different search or role filter." />
       ) : (

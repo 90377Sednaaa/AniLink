@@ -101,6 +101,100 @@ const ICON_PATHS = {
       <line x1="2" x2="22" y1="2" y2="22" />
     </>
   ),
+  menu: (
+    <>
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="18" y2="18" />
+    </>
+  ),
+  close: (
+    <>
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </>
+  ),
+  plus: (
+    <>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </>
+  ),
+  minus: (
+    <path d="M5 12h14" />
+  ),
+  chevronRight: (
+    <path d="m9 18 6-6-6-6" />
+  ),
+  chevronDown: (
+    <path d="m6 9 6 6 6-6" />
+  ),
+  filter: (
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  ),
+  eye: (
+    <>
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  arrowUpRight: (
+    <>
+      <path d="M7 7h10v10" />
+      <path d="M7 17 17 7" />
+    </>
+  ),
+  arrowDown: (
+    <>
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </>
+  ),
+  arrowUp: (
+    <>
+      <path d="M12 19V5" />
+      <path d="m5 12 7-7 7 7" />
+    </>
+  ),
+  store: (
+    <>
+      <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+      <path d="M2 7h20" />
+    </>
+  ),
+  shieldCheck: (
+    <>
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  leaf: (
+    <>
+      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+    </>
+  ),
+  undo: (
+    <>
+      <path d="M3 7v6h6" />
+      <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+    </>
+  ),
+  alertTriangle: (
+    <>
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <line x1="12" x2="12" y1="9" y2="13" />
+      <line x1="12" x2="12.01" y1="17" y2="17" />
+    </>
+  ),
+  arrowLeft: (
+    <>
+      <path d="m12 19-7-7 7-7" />
+      <path d="M19 12H5" />
+    </>
+  ),
 }
 
 export function Icon({ name, className = 'w-5 h-5' }) {
@@ -126,22 +220,218 @@ export function PageHeader({ title, desc, children }) {
 }
 
 export function Skeleton({ className = '' }) {
-  return <div className={`animate-pulse rounded-lg bg-[#EFEAE0] ${className}`} />
+  return <div className={`animate-shimmer rounded-xl bg-[#EBE5DA] ${className}`} />
 }
 
 export function CardSkeleton({ rows = 3, className = '' }) {
   return (
-    <div className={`bg-white rounded-[12px] border border-[#E8E2D6] p-5 space-y-3 ${className}`} aria-busy="true" aria-live="polite">
+    <div className={`bg-white rounded-2xl sm:rounded-3xl border-2 border-[#E8E2D6] p-5 sm:p-6 space-y-4 shadow-sm ${className}`} aria-busy="true" aria-live="polite">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-3.5 w-1/3" />
-            <Skeleton className="h-3 w-2/3" />
+        <div key={i} className="flex items-center gap-3.5 pt-3.5 first:pt-0 border-t border-[#F0EDE6] first:border-0">
+          <Skeleton className="w-11 h-11 rounded-2xl shrink-0" />
+          <div className="flex-1 space-y-2 min-w-0">
+            <Skeleton className="h-4 w-1/3 max-w-[180px]" />
+            <Skeleton className="h-3 w-2/3 max-w-[280px]" />
           </div>
-          <Skeleton className="h-8 w-20 rounded-full" />
+          <Skeleton className="h-9 w-24 rounded-full shrink-0 hidden sm:block" />
         </div>
       ))}
+    </div>
+  )
+}
+
+export function ProductCardSkeleton({ className = '' }) {
+  return (
+    <div
+      className={`bg-white rounded-2xl sm:rounded-3xl border-2 border-[#E8E2D6] p-3.5 sm:p-4 flex flex-col justify-between h-full shadow-sm space-y-3.5 ${className}`}
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="space-y-3">
+        <Skeleton className="aspect-square w-full rounded-2xl" />
+        <div className="flex items-center gap-1.5">
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-14 rounded-full" />
+        </div>
+        <div className="space-y-1.5 pt-0.5">
+          <Skeleton className="h-4 w-4/5" />
+          <Skeleton className="h-3.5 w-1/2" />
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <Skeleton className="w-4 h-4 rounded-full shrink-0" />
+          <Skeleton className="h-3 w-2/3" />
+        </div>
+      </div>
+      <div className="pt-2 border-t border-[#F0EDE6] flex items-center justify-between gap-2">
+        <div className="space-y-1">
+          <Skeleton className="h-4 w-14" />
+          <Skeleton className="h-2.5 w-10" />
+        </div>
+        <Skeleton className="h-9 w-24 rounded-full shrink-0" />
+      </div>
+    </div>
+  )
+}
+
+export function OrderCardSkeleton({ className = '' }) {
+  return (
+    <div
+      className={`bg-white rounded-2xl sm:rounded-3xl border-2 border-[#E8E2D6] p-5 sm:p-6 flex flex-col gap-4 shadow-sm ${className}`}
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="flex items-center justify-between pb-3.5 border-b border-[#F0EDE6] gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-5 w-24 rounded-lg" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+        </div>
+        <div className="space-y-1 text-right">
+          <Skeleton className="h-5 w-20 ml-auto" />
+          <Skeleton className="h-3 w-28 ml-auto" />
+        </div>
+      </div>
+
+      <div className="bg-[#FAF8F3] rounded-2xl p-4 border border-[#E8E2D6]">
+        <div className="grid grid-cols-6 items-center gap-2">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex flex-col items-center space-y-2">
+              <Skeleton className="w-8 h-8 rounded-full shrink-0" />
+              <Skeleton className="h-3 w-10 sm:w-14" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start pt-1">
+        <div className="lg:col-span-4 bg-[#FAF8F3] rounded-2xl p-4 border border-[#E8E2D6] space-y-2.5">
+          <Skeleton className="h-3.5 w-24" />
+          <Skeleton className="h-4 w-36" />
+          <Skeleton className="h-3 w-4/5" />
+        </div>
+
+        <div className="lg:col-span-5 bg-[#FAF8F3] rounded-2xl p-4 border border-[#E8E2D6] space-y-2.5">
+          <Skeleton className="h-3.5 w-32" />
+          <div className="space-y-2 pt-1">
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-3 w-36" />
+              <Skeleton className="h-3 w-14" />
+            </div>
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-3 w-14" />
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-3 space-y-2 flex flex-col justify-center h-full">
+          <Skeleton className="h-12 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function TelemetryCardSkeleton({ count = 4, className = '' }) {
+  return (
+    <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 ${className}`} aria-busy="true" aria-live="polite">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="bg-white rounded-2xl p-4 border-2 border-[#E8E2D6] space-y-2 shadow-sm">
+          <Skeleton className="h-3 w-20" />
+          <Skeleton className="h-7 w-16" />
+          <Skeleton className="h-2.5 w-28 hidden sm:block" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function NotificationSkeleton({ count = 4, className = '' }) {
+  return (
+    <div className={`space-y-3 ${className}`} aria-busy="true" aria-live="polite">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="bg-white rounded-2xl border-2 border-[#E8E2D6] p-4 flex items-center gap-3.5 shadow-sm">
+          <Skeleton className="w-10 h-10 rounded-2xl shrink-0" />
+          <div className="flex-1 space-y-2 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+            <Skeleton className="h-3 w-3/4" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function TableSkeleton({ rows = 5, className = '' }) {
+  return (
+    <div className={`bg-white rounded-2xl sm:rounded-3xl border-2 border-[#E8E2D6] overflow-hidden shadow-sm ${className}`} aria-busy="true" aria-live="polite">
+      <div className="p-4 bg-[#FAF8F3] border-b border-[#E8E2D6] flex items-center justify-between gap-4">
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-9 w-48 rounded-xl" />
+      </div>
+      <div className="divide-y divide-[#F0EDE6]">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="p-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
+              <div className="space-y-1.5 flex-1 min-w-0">
+                <Skeleton className="h-4 w-1/3 max-w-[160px]" />
+                <Skeleton className="h-3 w-1/4 max-w-[100px]" />
+              </div>
+            </div>
+            <Skeleton className="h-4 w-20 hidden md:block" />
+            <Skeleton className="h-4 w-16 hidden sm:block" />
+            <Skeleton className="h-9 w-24 rounded-xl shrink-0" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function ProductDetailSkeleton() {
+  return (
+    <div className="max-w-5xl mx-auto py-4 sm:py-6 space-y-6" aria-busy="true" aria-live="polite">
+      <Skeleton className="h-8 w-36 rounded-full" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="lg:col-span-7 space-y-3">
+          <Skeleton className="aspect-[4/3] w-full rounded-3xl" />
+          <div className="grid grid-cols-4 gap-2.5">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-2xl" />
+            ))}
+          </div>
+        </div>
+        <div className="lg:col-span-5 bg-white rounded-3xl border-2 border-[#E8E2D6] p-6 space-y-5 shadow-sm">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-6 w-20 rounded-full" />
+              <Skeleton className="h-6 w-24 rounded-full" />
+            </div>
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+          <div className="p-4 rounded-2xl bg-[#FAF8F3] border border-[#E8E2D6] flex items-center gap-3">
+            <Skeleton className="w-11 h-11 rounded-2xl shrink-0" />
+            <div className="space-y-1.5 flex-1">
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-3 w-1/3" />
+            </div>
+          </div>
+          <div className="space-y-2 pt-2">
+            <Skeleton className="h-9 w-36" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+          <div className="space-y-3 pt-2">
+            <Skeleton className="h-12 w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full rounded-2xl" />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

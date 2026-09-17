@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import { peso, statusColor } from '../components/format'
-import { Icon } from '../../shared/ui'
+import { Icon, OrderCardSkeleton } from '../../shared/ui'
 
 const filters = [
   { value: 'all', label: 'All Orders' },
@@ -230,9 +230,9 @@ export default function Orders() {
 
       {/* Order Cards List */}
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-36 bg-white border border-[#E8E2D6] rounded-2xl animate-pulse" />
+            <OrderCardSkeleton key={i} />
           ))}
         </div>
       ) : orders.length === 0 ? (

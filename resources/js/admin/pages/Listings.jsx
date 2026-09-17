@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { useState } from 'react'
-import { PageHeader, CardSkeleton, EmptyState, Chip, Icon } from '../../shared/ui'
+import { PageHeader, CardSkeleton, TableSkeleton, EmptyState, Chip, Icon } from '../../shared/ui'
 
 export default function Listings() {
   const [filter, setFilter] = useState('available')
@@ -42,7 +42,7 @@ export default function Listings() {
       </div>
 
       {isLoading ? (
-        <CardSkeleton rows={4} />
+        <TableSkeleton rows={5} />
       ) : rows.length === 0 ? (
         <EmptyState icon="grid" title="No listings found" hint="Try a different search or status filter." />
       ) : (
