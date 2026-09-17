@@ -114,15 +114,19 @@ export default function Layout({ children }) {
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-[#E8E2D6]/80 transition-all duration-300 shadow-[0_4px_20px_rgba(46,83,57,0.03)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-3 sm:gap-4">
           {/* Brand Logo - Far Left */}
-          <Link to="/" className="flex items-center gap-3 shrink-0 group hover:opacity-95 transition">
-            <div className="w-10 h-10 rounded-2xl bg-[#E8F0E9] border border-[#2E5339]/15 flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition duration-200">
-              <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-full h-full object-contain" />
+          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0 group hover:opacity-95 transition">
+            <div className="w-10 h-10 rounded-2xl bg-[#E8F0E9] border border-[#2E5339]/15 flex items-center justify-center shadow-sm group-hover:scale-105 transition duration-200 overflow-hidden relative">
+              <img
+                src="/apple-touch-icon-180.png"
+                alt="AniMarket"
+                className="w-8 h-8 object-contain -translate-y-0.5 select-none"
+              />
             </div>
-            <div className="flex flex-col justify-center leading-none">
-              <span className="block font-extrabold text-lg sm:text-xl text-[#1A1A1A] tracking-tight group-hover:text-[#2E5339] transition">
+            <div className="flex flex-col justify-center">
+              <span className="font-extrabold text-lg sm:text-xl text-[#1A1A1A] tracking-tight leading-none group-hover:text-[#2E5339] transition">
                 AniMarket
               </span>
-              <span className="block text-[10px] sm:text-[11px] font-bold text-[#2E5339] tracking-wider uppercase mt-1">
+              <span className="text-[10px] sm:text-[11px] font-bold text-[#2E5339] tracking-wider uppercase leading-none mt-1 sm:mt-1.5">
                 Farm-Direct
               </span>
             </div>
