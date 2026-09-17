@@ -59,87 +59,138 @@ export default function ForgotPassword({ loginPath = '/login' }) {
   }
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-sm bg-white border border-[#E8E2D6] rounded-[16px] p-6">
-        <h1 className="text-xl font-semibold">Reset your password</h1>
-        <p className="text-sm text-[#5C5C5C] mt-1">
-          {step === 'email' && 'Enter your account email and we will send you a 6-digit reset code.'}
-          {step === 'reset' && `Enter the code sent to ${email} and choose a new password.`}
-          {step === 'done' && 'All done — every signed-in device was signed out for safety.'}
+    <div className="min-h-[70vh] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md bg-white border-2 border-[#E8E2D6] rounded-2xl p-7 sm:p-9 shadow-md">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1A1A1A] tracking-tight">Reset Your Password</h1>
+        <p className="text-sm sm:text-base text-[#374151] mt-2 font-medium leading-relaxed">
+          {step === 'email' && 'Enter your account email address and we will send you a 6-digit password reset code.'}
+          {step === 'reset' && `Enter the 6-digit code sent to ${email} and create your new password.`}
+          {step === 'done' && 'Your password has been successfully reset. All active sessions have been safely signed out.'}
         </p>
 
         {step === 'email' && (
-          <form onSubmit={requestCode} className="mt-5 space-y-3">
-            <input
-              type="email"
-              required
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-[#E8E2D6] rounded-[12px] px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339]"
-            />
-            {error && <div className="text-sm text-[#B0413E] bg-[#F6E3E2] border border-[#E5B9B6] rounded-[10px] px-3 py-2">{error}</div>}
+          <form onSubmit={requestCode} className="mt-6 space-y-5">
+            <div>
+              <label htmlFor="reset-email" className="block text-sm sm:text-base font-bold text-[#1A1A1A] mb-1.5">
+                Email Address <span className="text-[#B0413E]">*</span>
+              </label>
+              <input
+                id="reset-email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="e.g. maria.santos@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 sm:h-13 border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-base text-[#1A1A1A] font-medium placeholder:text-[#64748B] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+              />
+            </div>
+            {error && (
+              <div className="text-sm font-semibold text-[#991B1B] bg-[#FEE2E2] border-2 border-[#FCA5A5] rounded-xl px-4 py-3">
+                {error}
+              </div>
+            )}
             <button
+              type="submit"
               disabled={busy}
-              className="w-full py-3 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50"
+              className="w-full h-12 sm:h-13 py-3 rounded-xl bg-[#2E5339] text-white text-base font-bold hover:bg-[#24412D] transition shadow-md disabled:opacity-60 flex items-center justify-center tracking-wide"
             >
-              {busy ? 'Sending…' : 'Send reset code'}
+              {busy ? 'Sending code…' : 'Send 6-Digit Reset Code'}
             </button>
           </form>
         )}
 
         {step === 'reset' && (
-          <form onSubmit={resetPassword} className="mt-5 space-y-3">
-            {notice && <div className="text-sm text-[#4A7C59] bg-[#E8F0E9] border border-[#C5D9C7] rounded-[10px] px-3 py-2">{notice}</div>}
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="123456"
-              inputMode="numeric"
-              required
-              className="w-full text-center text-2xl tracking-[0.4em] border border-[#E8E2D6] rounded-[12px] px-4 py-3 focus:outline-none focus:border-[#2E5339]"
-            />
-            <input
-              type="password"
-              required
-              placeholder="New password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-[#E8E2D6] rounded-[12px] px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339]"
-            />
-            <input
-              type="password"
-              required
-              placeholder="Confirm new password"
-              value={passwordConfirmation}
-              onChange={(e) => setPasswordConfirmation(e.target.value)}
-              className="w-full border border-[#E8E2D6] rounded-[12px] px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339]"
-            />
-            {error && <div className="text-sm text-[#B0413E] bg-[#F6E3E2] border border-[#E5B9B6] rounded-[10px] px-3 py-2">{error}</div>}
+          <form onSubmit={resetPassword} className="mt-6 space-y-5">
+            {notice && (
+              <div className="text-sm font-semibold text-[#1B3322] bg-[#E8F0E9] border-2 border-[#A3C9A8] rounded-xl px-4 py-3">
+                {notice}
+              </div>
+            )}
+            <div>
+              <label htmlFor="reset-code" className="block text-base font-bold text-[#1A1A1A] mb-2 text-center">
+                6-Digit Reset Code
+              </label>
+              <input
+                id="reset-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="123456"
+                inputMode="numeric"
+                required
+                autoFocus
+                className="w-full h-14 text-center text-3xl font-bold tracking-[0.4em] border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-[#1A1A1A] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+              />
+            </div>
+            <div>
+              <label htmlFor="reset-new-password" className="block text-sm sm:text-base font-bold text-[#1A1A1A] mb-1.5">
+                New Password <span className="text-[#B0413E]">*</span>
+              </label>
+              <input
+                id="reset-new-password"
+                type="password"
+                required
+                autoComplete="new-password"
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-12 sm:h-13 border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-base text-[#1A1A1A] font-medium placeholder:text-[#64748B] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+              />
+            </div>
+            <div>
+              <label htmlFor="reset-confirm-password" className="block text-sm sm:text-base font-bold text-[#1A1A1A] mb-1.5">
+                Confirm New Password <span className="text-[#B0413E]">*</span>
+              </label>
+              <input
+                id="reset-confirm-password"
+                type="password"
+                required
+                autoComplete="new-password"
+                placeholder="Re-enter your new password"
+                value={passwordConfirmation}
+                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                className="w-full h-12 sm:h-13 border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-base text-[#1A1A1A] font-medium placeholder:text-[#64748B] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+              />
+            </div>
+            {error && (
+              <div className="text-sm font-semibold text-[#991B1B] bg-[#FEE2E2] border-2 border-[#FCA5A5] rounded-xl px-4 py-3">
+                {error}
+              </div>
+            )}
             <button
+              type="submit"
               disabled={busy}
-              className="w-full py-3 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-50"
+              className="w-full h-12 sm:h-13 py-3 rounded-xl bg-[#2E5339] text-white text-base font-bold hover:bg-[#24412D] transition shadow-md disabled:opacity-60 flex items-center justify-center tracking-wide"
             >
-              {busy ? 'Resetting…' : 'Set new password'}
+              {busy ? 'Saving new password…' : 'Set New Password'}
             </button>
           </form>
         )}
 
         {step === 'done' && (
-          <div className="mt-5 space-y-3">
-            {notice && <div className="text-sm text-[#4A7C59] bg-[#E8F0E9] border border-[#C5D9C7] rounded-[10px] px-3 py-2">{notice}</div>}
+          <div className="mt-6 space-y-4">
+            {notice && (
+              <div className="text-sm font-semibold text-[#1B3322] bg-[#E8F0E9] border-2 border-[#A3C9A8] rounded-xl px-4 py-3">
+                {notice}
+              </div>
+            )}
             <Link
               to={loginPath}
-              className="block w-full text-center py-3 rounded-[12px] bg-[#2E5339] text-white text-sm font-semibold hover:brightness-110"
+              className="block w-full text-center h-12 sm:h-13 leading-[3rem] rounded-xl bg-[#2E5339] text-white text-base font-bold hover:bg-[#24412D] transition shadow-md"
             >
-              Back to sign in
+              Back to Sign In
             </Link>
           </div>
         )}
 
-        <p className="text-xs text-[#5C5C5C] mt-4 text-center">
-          Remembered it? <Link to={loginPath} className="text-[#2E5339] font-semibold underline">Back to sign in</Link>
-        </p>
+        <div className="mt-6 pt-5 border-t border-[#E8E2D6] text-center">
+          <p className="text-sm sm:text-base text-[#374151] font-medium">
+            Remembered your password?{' '}
+            <Link to={loginPath} className="text-[#2E5339] font-extrabold underline hover:text-[#1B3322] ml-1">
+              Back to sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

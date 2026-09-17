@@ -31,52 +31,86 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-sm bg-white border border-[#E8E2D6] rounded-2xl p-6 sm:p-7 shadow-sm">
-        <div className="text-center mb-5">
+    <div className="min-h-[75vh] flex flex-col items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md bg-white border-2 border-[#E8E2D6] rounded-2xl p-7 sm:p-9 shadow-md">
+        <div className="text-center mb-6">
           <Link to="/" className="inline-flex items-center gap-2.5 mb-3 group hover:opacity-90 transition">
-            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm shrink-0" />
-            <span className="font-bold text-xl text-[#1A1A1A] tracking-tight leading-none">AniMarket</span>
+            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-9 h-9 rounded-xl shadow-sm shrink-0" />
+            <span className="font-bold text-2xl text-[#1A1A1A] tracking-tight leading-none">AniMarket</span>
           </Link>
-          <h1 className="text-xl font-bold tracking-tight text-[#1A1A1A]">Sign In</h1>
-          <p className="text-xs text-[#5C5C5C] mt-1">
-            {pendingToken ? 'Enter the 6-digit code sent to your email.' : 'Sign in to access your orders and basket.'}
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1A1A1A]">Sign In</h1>
+          <p className="text-sm sm:text-base text-[#374151] mt-2 font-medium">
+            {pendingToken
+              ? 'Enter the 6-digit verification code sent to your email.'
+              : 'Sign in to access your farm produce orders and basket.'}
           </p>
         </div>
 
-        <form onSubmit={submit} className="space-y-3.5">
+        <form onSubmit={submit} className="space-y-5">
           {pendingToken ? (
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="123456"
-              inputMode="numeric"
-              autoFocus
-              className="w-full text-center text-2xl tracking-[0.4em] border border-[#E8E2D6] bg-[#FAF8F3] rounded-xl px-4 py-3 focus:outline-none focus:border-[#2E5339] focus:bg-white transition"
-            />
+            <div>
+              <label htmlFor="login-code" className="block text-base font-bold text-[#1A1A1A] mb-2 text-center">
+                6-Digit Security Code
+              </label>
+              <input
+                id="login-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="123456"
+                inputMode="numeric"
+                autoFocus
+                className="w-full h-14 text-center text-3xl font-bold tracking-[0.4em] border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-[#1A1A1A] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+              />
+              <p className="text-xs text-[#4B5563] text-center mt-2 font-medium">
+                Check your email inbox or spam folder for your 6-digit code.
+              </p>
+            </div>
           ) : (
             <>
-              <input
-                type="email"
-                required
-                placeholder="Email address"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full border border-[#E8E2D6] bg-[#FAF8F3] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339] focus:bg-white transition"
-              />
-              <input
-                type="password"
-                required
-                placeholder="Password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-[#E8E2D6] bg-[#FAF8F3] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2E5339] focus:bg-white transition"
-              />
+              <div>
+                <label htmlFor="login-email" className="block text-sm sm:text-base font-bold text-[#1A1A1A] mb-1.5">
+                  Email Address <span className="text-[#B0413E]">*</span>
+                </label>
+                <input
+                  id="login-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="e.g. maria.santos@gmail.com"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full h-12 sm:h-13 border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-base text-[#1A1A1A] font-medium placeholder:text-[#64748B] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label htmlFor="login-password" className="block text-sm sm:text-base font-bold text-[#1A1A1A]">
+                    Password <span className="text-[#B0413E]">*</span>
+                  </label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm font-bold text-[#2E5339] hover:text-[#1B3322] underline transition"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <input
+                  id="login-password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  placeholder="Enter your account password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  className="w-full h-12 sm:h-13 border-2 border-[#CBD5E1] bg-white rounded-xl px-4 text-base text-[#1A1A1A] font-medium placeholder:text-[#64748B] focus:outline-none focus:border-[#2E5339] focus:ring-4 focus:ring-[#2E5339]/15 transition"
+                />
+              </div>
             </>
           )}
 
           {error && (
-            <div className="text-xs text-[#B0413E] bg-[#F6E3E2] border border-[#E5B9B6] rounded-xl px-3.5 py-2.5">
+            <div className="text-sm font-semibold text-[#991B1B] bg-[#FEE2E2] border-2 border-[#FCA5A5] rounded-xl px-4 py-3">
               {error}
             </div>
           )}
@@ -84,31 +118,30 @@ export default function Login() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full py-3 rounded-xl bg-[#2E5339] text-white text-sm font-semibold hover:bg-[#24412D] transition shadow-sm disabled:opacity-50"
+            className="w-full h-12 sm:h-13 py-3 rounded-xl bg-[#2E5339] text-white text-base font-bold hover:bg-[#24412D] transition shadow-md disabled:opacity-60 flex items-center justify-center tracking-wide"
           >
-            {busy ? 'Please wait…' : pendingToken ? 'Verify Code' : 'Sign In'}
+            {busy ? 'Please wait…' : pendingToken ? 'Verify Code' : 'Sign In to My Account'}
           </button>
         </form>
 
         {!pendingToken && (
-          <div className="mt-5 pt-4 border-t border-[#E8E2D6]/80 text-center space-y-2">
-            <p className="text-xs text-[#5C5C5C]">
+          <div className="mt-6 pt-5 border-t border-[#E8E2D6] text-center">
+            <p className="text-sm sm:text-base text-[#374151] font-medium">
               New to AniLink?{' '}
-              <Link to="/register" className="text-[#2E5339] font-bold hover:underline">
+              <Link to="/register" className="text-[#2E5339] font-extrabold underline hover:text-[#1B3322] ml-1">
                 Create an account
               </Link>
             </p>
-            <div>
-              <Link to="/forgot-password" className="text-xs text-[#8A8A8A] hover:text-[#2E5339] transition">
-                Forgot your password?
-              </Link>
-            </div>
           </div>
         )}
       </div>
 
-      <Link to="/" className="text-xs text-[#8A8A8A] hover:text-[#2E5339] mt-5 transition">
-        ← Return to Marketplace
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-sm sm:text-base font-bold text-[#2E5339] hover:underline mt-6 transition"
+      >
+        <span>←</span>
+        <span>Return to Marketplace</span>
       </Link>
     </div>
   )

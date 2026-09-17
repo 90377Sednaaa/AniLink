@@ -16,11 +16,11 @@
     --color-cancel: #B0413E;
 }
 
-/* Placeholder — very light hint (#C2CAD5 vs input #1A1A1A / #B0B8C3 was still dark) */
+/* Accessible, readable placeholders for seniors and low-vision users */
 input::placeholder,
 textarea::placeholder {
-    color: #C2CAD5;
-    opacity: 1;
+    color: #64748B;
+    opacity: 0.8;
 }
 
 /* Brand accessibility touches */
