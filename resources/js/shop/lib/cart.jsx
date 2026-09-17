@@ -9,6 +9,7 @@ function load() {
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(load)
+  const [lastAdded, setLastAdded] = useState(null)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
@@ -29,7 +30,15 @@ export function CartProvider({ children }) {
         qty,
       }]
     })
+
+    setLastAdded({
+      product,
+      qty,
+      id: Date.now(),
+    })
   }
+
+  const dismissNotification = () => setLastAdded(null)
 
   const setQty = (productId, qty) => {
     setItems(prev => (qty <= 0
@@ -44,7 +53,9 @@ export function CartProvider({ children }) {
     items, add, setQty, remove, clear,
     count: items.reduce((n, i) => n + i.qty, 0),
     subtotal: items.reduce((n, i) => n + i.price * i.qty, 0),
-  }), [items])
+    lastAdded,
+    dismissNotification,
+  }), [items, lastAdded])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

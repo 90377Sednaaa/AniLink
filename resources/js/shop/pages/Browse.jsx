@@ -186,9 +186,30 @@ export default function Browse() {
         ))}
       </div>
 
+      {/* Active Filter / Result Count Indicator */}
+      <div className="flex items-center justify-between text-xs text-[#5C5C5C] px-0.5">
+        <span>
+          Showing <strong className="text-[#1A1A1A]">{products.length}</strong> {products.length === 1 ? 'harvest' : 'harvests'}
+          {category ? (
+            <span> in <strong className="text-[#2E5339]">{categories?.find((c) => c.slug === category)?.name || category}</strong></span>
+          ) : (
+            ' across all categories'
+          )}
+        </span>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="text-[#8A8A8A] hover:text-[#B0413E] underline transition"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
       {/* Content Grid / States */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="aspect-[4/5] bg-white border border-[#E8E2D6] rounded-2xl animate-pulse" />
           ))}
@@ -215,7 +236,7 @@ export default function Browse() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

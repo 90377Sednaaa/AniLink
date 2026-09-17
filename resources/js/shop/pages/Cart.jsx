@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
@@ -9,6 +10,7 @@ import { Icon } from '../../shared/ui'
 export default function Cart() {
   const { user } = useAuth()
   const { items, setQty, remove, clear } = useCart()
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
 
   const { data } = useQuery({
     queryKey: ['cart-validate', items],
@@ -26,21 +28,101 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-md mx-auto text-center py-20 bg-white border border-[#E8E2D6] rounded-2xl p-8 my-8 shadow-sm">
-        <div className="w-14 h-14 mx-auto rounded-full bg-[#E8F0E9] text-[#2E5339] flex items-center justify-center mb-4">
-          <Icon name="cart" className="w-7 h-7" />
+      <div className="max-w-2xl mx-auto py-6 space-y-8">
+        {/* Main Empty Basket Card */}
+        <div className="bg-white border border-[#E8E2D6] rounded-3xl p-8 sm:p-12 text-center shadow-sm relative overflow-hidden">
+          <div className="relative w-20 h-20 mx-auto mb-5">
+            <div className="w-20 h-20 rounded-3xl bg-[#E8F0E9] text-[#2E5339] flex items-center justify-center shadow-inner ring-8 ring-[#E8F0E9]/50">
+              <Icon name="cart" className="w-9 h-9" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#2E5339] text-white flex items-center justify-center shadow-md">
+              <Icon name="sprout" className="w-4 h-4" />
+            </div>
+          </div>
+
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FAF8F3] border border-[#E8E2D6] text-[#8A8A8A] mb-3">
+            Harvest Basket is Empty
+          </span>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1A1A1A] tracking-tight">
+            Your harvest basket is waiting
+          </h1>
+
+          <p className="text-xs sm:text-sm text-[#5C5C5C] max-w-md mx-auto mt-2.5 leading-relaxed">
+            Fresh vegetables, fruits, and grains are being harvested today across Benguet, Laguna, Davao, and regional farms. Connect directly with Filipino growers.
+          </p>
+
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 mt-7 px-8 py-3.5 rounded-xl bg-[#2E5339] text-white text-xs sm:text-sm font-semibold hover:bg-[#24412D] transition shadow-md active:scale-98"
+          >
+            <span>Explore Fresh Harvests</span>
+            <span>→</span>
+          </Link>
         </div>
-        <h1 className="text-xl font-bold text-[#1A1A1A]">Your shopping basket is empty</h1>
-        <p className="text-sm text-[#5C5C5C] mt-1.5">
-          Fresh harvests from accredited local farms are ready for harvest.
-        </p>
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-[#2E5339] text-white text-xs font-semibold hover:bg-[#24412D] transition shadow-sm"
-        >
-          <span>Browse Marketplace</span>
-          <span>→</span>
-        </Link>
+
+        {/* Quick Category Discoveries */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#8A8A8A]">
+              Popular Harvest Categories
+            </h2>
+            <Link to="/" className="text-xs font-semibold text-[#2E5339] hover:underline">
+              View All →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { title: 'Highland Greens', desc: 'Pechay, Romaine, Cabbage', slug: 'gulay', icon: 'sprout' },
+              { title: 'Root Crops', desc: 'Potatoes, Carrots, Tubers', slug: 'gulay', icon: 'inventory' },
+              { title: 'Tropical Fruits', desc: 'Mangoes, Papayas, Citrus', slug: 'prutas', icon: 'badge' },
+              { title: 'Heirloom Grains', desc: 'Organic Red & Brown Rice', slug: 'bigas', icon: 'orders' },
+            ].map((cat) => (
+              <Link
+                key={cat.title}
+                to="/"
+                className="p-4 bg-white border border-[#E8E2D6] rounded-2xl hover:border-[#2E5339]/50 hover:shadow-sm transition flex flex-col justify-between group text-left"
+              >
+                <div className="w-8 h-8 rounded-xl bg-[#FAF8F3] text-[#2E5339] flex items-center justify-center mb-2 group-hover:bg-[#E8F0E9] transition">
+                  <Icon name={cat.icon} className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-xs text-[#1A1A1A] group-hover:text-[#2E5339] transition">
+                    {cat.title}
+                  </div>
+                  <div className="text-[10px] text-[#8A8A8A] mt-0.5 line-clamp-1">{cat.desc}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Farm Direct Commitments */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          {[
+            {
+              title: '100% Direct from Farm',
+              desc: 'No middlemen or consolidation markups. Maximum earnings flow straight to farmers.',
+            },
+            {
+              title: 'Harvested to Order',
+              desc: 'Crops are picked at peak maturity and packed carefully for freshness.',
+            },
+            {
+              title: 'Verified Local Farms',
+              desc: 'Every grower is verified by AniLink with strict agricultural standards.',
+            },
+          ].map((feat) => (
+            <div key={feat.title} className="p-4 bg-[#FAF8F3] rounded-2xl border border-[#E8E2D6]/80 text-left">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#2E5339]">
+                <Icon name="check" className="w-3.5 h-3.5 text-[#2E5339]" />
+                <span>{feat.title}</span>
+              </div>
+              <p className="text-[11px] text-[#5C5C5C] mt-1.5 leading-relaxed">{feat.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
@@ -165,7 +247,7 @@ export default function Cart() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={clear}
+            onClick={() => setShowClearConfirm(true)}
             className="text-xs text-[#8A8A8A] hover:text-[#B0413E] px-3 py-2 transition"
           >
             Clear All
@@ -178,6 +260,42 @@ export default function Cart() {
           </Link>
         </div>
       </div>
+
+      {/* Clear Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-[#E8E2D6] max-w-sm w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="w-10 h-10 rounded-xl bg-[#F6E3E2] text-[#B0413E] flex items-center justify-center mx-auto">
+              <Icon name="trash" className="w-5 h-5" />
+            </div>
+            <div className="text-center">
+              <h3 className="font-bold text-base text-[#1A1A1A]">Empty your shopping basket?</h3>
+              <p className="text-xs text-[#5C5C5C] mt-1 leading-relaxed">
+                This will remove all {items.length} produce item{items.length === 1 ? '' : 's'} from your basket.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl border border-[#E8E2D6] text-xs font-semibold text-[#5C5C5C] hover:bg-[#FAF8F3] transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clear()
+                  setShowClearConfirm(false)
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-[#B0413E] text-white text-xs font-semibold hover:brightness-110 transition shadow-sm"
+              >
+                Empty Basket
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

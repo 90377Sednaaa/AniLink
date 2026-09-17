@@ -1,9 +1,101 @@
+import { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '../lib/auth'
 import { useCart } from '../lib/cart'
 import { api } from '../lib/api'
+import { peso } from './format'
 import { Icon } from '../../shared/ui'
+
+function CartNotificationToast() {
+  const { lastAdded, dismissNotification, subtotal, count } = useCart()
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    if (!lastAdded) {
+      setVisible(false)
+      return
+    }
+    setVisible(true)
+    const timer = setTimeout(() => {
+      setVisible(false)
+      dismissNotification()
+    }, 4500)
+    return () => clearTimeout(timer)
+  }, [lastAdded?.id])
+
+  if (!visible || !lastAdded) return null
+
+  const { product, qty } = lastAdded
+
+  return (
+    <div className="fixed top-20 right-4 sm:right-6 z-50 max-w-sm w-[calc(100vw-2rem)] sm:w-96 bg-white border border-[#2E5339]/20 rounded-2xl shadow-[0_16px_40px_rgba(46,83,57,0.18)] p-4 transition-all duration-300">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-bold text-[#2E5339]">
+          <span className="w-5 h-5 rounded-full bg-[#E8F0E9] flex items-center justify-center text-[#2E5339]">
+            <Icon name="check" className="w-3.5 h-3.5" />
+          </span>
+          <span>Added to Shopping Basket</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setVisible(false)
+            dismissNotification()
+          }}
+          className="text-[#8A8A8A] hover:text-[#1A1A1A] p-1 text-xs"
+          title="Dismiss"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#E8E2D6]/70">
+        <div className="w-12 h-12 rounded-xl bg-[#F4F1EA] overflow-hidden shrink-0 border border-[#E8E2D6]">
+          {product.image ? (
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-[#4A7C59]/60">
+              <Icon name="sprout" className="w-5 h-5" />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-bold text-xs text-[#1A1A1A] truncate">{product.name}</div>
+          <div className="text-[11px] text-[#5C5C5C] mt-0.5">
+            {qty} × {peso(product.price_per_unit)}/{product.unit_type}
+          </div>
+          <div className="text-[10px] text-[#8A8A8A] mt-0.5 font-medium">
+            Basket: {peso(subtotal)} ({count} {count === 1 ? 'item' : 'items'})
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 mt-3 pt-2">
+        <Link
+          to="/cart"
+          onClick={() => {
+            setVisible(false)
+            dismissNotification()
+          }}
+          className="flex-1 py-2 px-3 rounded-xl bg-[#2E5339] text-white text-xs font-semibold hover:bg-[#24412D] text-center transition shadow-sm"
+        >
+          View Basket
+        </Link>
+        <Link
+          to="/checkout"
+          onClick={() => {
+            setVisible(false)
+            dismissNotification()
+          }}
+          className="py-2 px-3 rounded-xl border border-[#E8E2D6] text-[#5C5C5C] hover:text-[#1A1A1A] hover:bg-[#FAF8F3] text-xs font-semibold text-center transition"
+        >
+          Checkout →
+        </Link>
+      </div>
+    </div>
+  )
+}
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth()
@@ -21,25 +113,16 @@ export default function Layout({ children }) {
     <div className="min-h-screen bg-[#FAF8F3] flex flex-col text-[#1A1A1A]">
       <header className="bg-[#2E5339] text-white sticky top-0 z-30 shadow-[0_2px_14px_rgba(46,83,57,0.22)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <a
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 shrink-0"
-              title="Return to AniLink Home"
-            >
-              <span>←</span>
-              <span className="hidden sm:inline">AniLink Home</span>
-            </a>
+          {/* Brand Logo - Far Left */}
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 hover:opacity-95 transition">
+            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm" />
+            <span className="leading-tight">
+              <span className="block font-semibold text-base text-white tracking-tight">AniMarket</span>
+              <span className="block text-[10px] text-white/70 tracking-wide uppercase font-medium">Farm-Direct</span>
+            </span>
+          </Link>
 
-            <Link to="/" className="flex items-center gap-2.5 shrink-0">
-              <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm" />
-              <span className="leading-tight">
-                <span className="block font-semibold text-base text-white">AniMarket</span>
-                <span className="block text-[10px] text-white/70 tracking-wide uppercase">Farm-Direct</span>
-              </span>
-            </Link>
-          </div>
-
+          {/* Right Navigation */}
           <nav className="flex items-center gap-1.5 sm:gap-2">
             <NavLink
               to="/"
@@ -134,9 +217,23 @@ export default function Layout({ children }) {
                 </Link>
               </div>
             )}
+
+            {/* Repositioned AniLink Home - Right Nav */}
+            <a
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 shrink-0 ml-1"
+              title="Return to AniLink Home"
+            >
+              <span>←</span>
+              <span className="hidden md:inline">AniLink Home</span>
+              <span className="md:hidden">Home</span>
+            </a>
           </nav>
         </div>
       </header>
+
+      {/* Global Shopping Basket Popup Notification */}
+      <CartNotificationToast />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">{children}</main>
 
