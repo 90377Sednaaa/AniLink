@@ -152,17 +152,17 @@ export default function Browse() {
       </div>
 
       {/* Category Pills Row */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none sm:flex-wrap">
         <button
           type="button"
           onClick={() => {
             setCategory('')
             setPage(1)
           }}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
             category === ''
-              ? 'bg-[#2E5339] text-white shadow-sm'
-              : 'bg-white border border-[#E8E2D6] text-[#5C5C5C] hover:border-[#2E5339]/40'
+              ? 'bg-[#2E5339] border-[#2E5339] text-white shadow-sm'
+              : 'bg-white border-[#E8E2D6] text-[#5C5C5C] hover:border-[#2E5339]/40'
           }`}
         >
           All Harvests
@@ -175,10 +175,10 @@ export default function Browse() {
               setCategory(c.slug)
               setPage(1)
             }}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
               category === c.slug
-                ? 'bg-[#2E5339] text-white shadow-sm'
-                : 'bg-white border border-[#E8E2D6] text-[#5C5C5C] hover:border-[#2E5339]/40'
+                ? 'bg-[#2E5339] border-[#2E5339] text-white shadow-sm'
+                : 'bg-white border-[#E8E2D6] text-[#5C5C5C] hover:border-[#2E5339]/40'
             }`}
           >
             {c.name}
@@ -208,40 +208,42 @@ export default function Browse() {
       </div>
 
       {/* Content Grid / States */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="aspect-[4/5] bg-white border border-[#E8E2D6] rounded-2xl animate-pulse" />
-          ))}
-        </div>
-      ) : isError ? (
-        <div className="text-center py-12 bg-white border border-red-200 rounded-2xl p-6 text-sm text-[#B0413E]">
-          Could not load the marketplace listings. Please refresh the page.
-        </div>
-      ) : products.length === 0 ? (
-        <div className="text-center py-16 bg-white border border-[#E8E2D6] rounded-2xl p-8 max-w-md mx-auto">
-          <div className="w-12 h-12 mx-auto rounded-full bg-[#E8F0E9] text-[#2E5339] flex items-center justify-center mb-3">
-            <Icon name="search" className="w-5 h-5" />
+      <div className="min-h-[420px]">
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="aspect-[4/5] bg-white border border-[#E8E2D6] rounded-2xl animate-pulse" />
+            ))}
           </div>
-          <h3 className="font-semibold text-base text-[#1A1A1A]">No harvests found</h3>
-          <p className="text-xs text-[#5C5C5C] mt-1">Try adjusting your keyword, region, or category filter.</p>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="mt-4 px-4 py-2 rounded-xl bg-[#2E5339] text-white text-xs font-semibold hover:bg-[#24412D] transition shadow-sm"
-            >
-              Reset All Filters
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      )}
+        ) : isError ? (
+          <div className="text-center py-12 bg-white border border-red-200 rounded-2xl p-6 text-sm text-[#B0413E]">
+            Could not load the marketplace listings. Please refresh the page.
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-16 bg-white border border-[#E8E2D6] rounded-2xl p-8 max-w-md mx-auto">
+            <div className="w-12 h-12 mx-auto rounded-full bg-[#E8F0E9] text-[#2E5339] flex items-center justify-center mb-3">
+              <Icon name="search" className="w-5 h-5" />
+            </div>
+            <h3 className="font-semibold text-base text-[#1A1A1A]">No harvests found</h3>
+            <p className="text-xs text-[#5C5C5C] mt-1">Try adjusting your keyword, region, or category filter.</p>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-4 px-4 py-2 rounded-xl bg-[#2E5339] text-white text-xs font-semibold hover:bg-[#24412D] transition shadow-sm"
+              >
+                Reset All Filters
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
       {lastPage > 1 && (
