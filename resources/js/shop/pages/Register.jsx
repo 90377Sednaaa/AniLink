@@ -52,9 +52,9 @@ export default function Register() {
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-8">
       <div className="w-full max-w-md bg-white border border-[#E8E2D6] rounded-2xl p-6 sm:p-7 shadow-sm">
         <div className="text-center mb-5">
-          <Link to="/" className="inline-flex items-center gap-2 mb-3">
-            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-9 h-9 rounded-xl shadow-sm" />
-            <span className="font-bold text-lg text-[#1A1A1A]">AniMarket</span>
+          <Link to="/" className="inline-flex items-center gap-2.5 mb-3 group hover:opacity-90 transition">
+            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm shrink-0" />
+            <span className="font-bold text-xl text-[#1A1A1A] tracking-tight leading-none">AniMarket</span>
           </Link>
           <h1 className="text-xl font-bold tracking-tight text-[#1A1A1A]">Create an Account</h1>
           <p className="text-xs text-[#5C5C5C] mt-1">

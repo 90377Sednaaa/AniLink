@@ -115,8 +115,8 @@ export default function Layout({ children }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo - Far Left */}
           <Link to="/" className="flex items-center gap-2.5 shrink-0 hover:opacity-95 transition">
-            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm" />
-            <span className="leading-tight">
+            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm shrink-0" />
+            <span className="flex flex-col justify-center leading-tight">
               <span className="block font-semibold text-base text-white tracking-tight">AniMarket</span>
               <span className="block text-[10px] text-white/70 tracking-wide uppercase font-medium">Farm-Direct</span>
             </span>
