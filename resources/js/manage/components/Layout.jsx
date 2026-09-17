@@ -170,7 +170,7 @@ export default function Layout({ children }) {
       )}
 
       {/* Desktop Sidebar (lg:flex) */}
-      <aside className="hidden lg:flex w-72 shrink-0 bg-gradient-to-b from-[#2E5339] to-[#1E3926] text-white flex-col sticky top-0 h-screen shadow-xl z-20">
+      <aside className="hidden lg:flex w-72 bg-gradient-to-b from-[#2E5339] to-[#1E3926] text-white flex-col fixed top-0 left-0 h-screen shadow-xl z-20">
         {/* Brand Header */}
         <div className="px-6 py-6 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -267,7 +267,7 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 min-w-0 flex flex-col bg-[#FAF8F3]">
+      <div className="flex-1 min-w-0 flex flex-col bg-[#FAF8F3] lg:ml-72">
         {/* Desktop Top Header Bar */}
         <header className="hidden lg:flex sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-[#E8E2D6] px-8 py-3.5 items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
