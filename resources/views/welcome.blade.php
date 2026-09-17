@@ -52,86 +52,54 @@
         </header>
 
         <main class="flex-1">
-            {{-- ===== Hero Section ===== --}}
-            <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-14 lg:pt-20 lg:pb-20 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-                <div>
-                    <span class="inline-flex items-center gap-2 h-8 px-3.5 rounded-full bg-[#FFF4D6] border border-[#F2D98A] text-[#8A6A0A] text-xs font-semibold">
-                        🧺 Farm-Direct Agricultural Cooperative
-                    </span>
-                    <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12] text-[#1A1A1A]">
+            {{-- ===== Hero Section (Editorial, Clean, No Chip Clutter) ===== --}}
+            <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 lg:pt-20 lg:pb-24 grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                <div class="lg:col-span-7">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#4A7C59]">
+                        Agricultural Fair-Trade Marketplace
+                    </p>
+                    <h1 class="mt-4 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-[#1A1A1A]">
                         Fresh From Local Farms,<br class="hidden sm:block" />
                         <span class="text-[#2E5339]">Fair Trades For Every Harvest.</span>
                     </h1>
-                    <p class="mt-5 text-[#5C5C5C] text-base sm:text-lg leading-7 max-w-[54ch]">
-                        <span class="font-semibold text-[#1A1A1A]">Ani</span> means harvest. AniLink connects verified Filipino smallholder farmers directly to households and food businesses — guaranteed fair prices for every harvest, fresher produce for every table.
+                    <p class="mt-5 text-[#5C5C5C] text-base sm:text-lg leading-relaxed max-w-xl font-normal">
+                        Connecting verified Filipino smallholder farmers directly to families and kitchens across the Philippines. Zero middlemen. Guaranteed fair grower prices. Fresher food on every table.
                     </p>
 
-                    <div class="mt-8 flex flex-wrap items-center gap-3.5">
-                        <a href="/shop" class="inline-flex h-12 items-center px-7 rounded-full bg-[#2E5339] text-white font-semibold hover:bg-[#24412D] transition shadow-[0_6px_20px_rgba(46,83,57,0.22)]">
+                    <div class="mt-8 flex flex-wrap items-center gap-4">
+                        <a href="/shop" class="inline-flex h-12 items-center px-8 rounded-full bg-[#2E5339] text-white font-semibold hover:bg-[#24412D] transition shadow-[0_8px_20px_rgba(46,83,57,0.18)]">
                             Browse Today’s Harvests →
                         </a>
-                        <a href="/manage" class="inline-flex h-12 items-center px-7 rounded-full bg-white border border-[#E8E2D6] font-semibold text-[#1A1A1A] hover:bg-white/80 hover:border-[#2E5339]/40 transition">
+                        <a href="/manage" class="inline-flex h-12 items-center px-8 rounded-full bg-white border border-[#1A1A1A]/20 font-semibold text-[#1A1A1A] hover:bg-[#FAF8F3] hover:border-[#2E5339] transition">
                             Sell Your Harvest
                         </a>
                     </div>
                     <p class="mt-4 text-xs text-[#8A8A8A]">
-                        New buyer? <a href="/shop/register" class="text-[#2E5339] font-semibold underline">Create a free account</a> · Need commercial bulk supply? <a href="/shop" class="text-[#2E5339] font-semibold underline">Request wholesale B2B quotes</a>
+                        Wholesale bulk supply available for restaurants and grocers · <a href="/shop/register" class="text-[#2E5339] font-semibold hover:underline">Register free</a>
                     </p>
-
-                    {{-- Trust signals — clean, solid pill badges (no dot clutter) --}}
-                    <div class="mt-8 flex flex-wrap gap-2.5 text-xs font-medium text-[#2E5339]">
-                        <span class="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-white border border-[#E8E2D6] shadow-sm">✓ 100% Verified Local Farmers</span>
-                        <span class="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-white border border-[#E8E2D6] shadow-sm">✓ Direct Fair Pricing</span>
-                        <span class="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-white border border-[#E8E2D6] shadow-sm">✓ 2FA Secure Escrow Accounts</span>
-                    </div>
                 </div>
 
-                {{-- Hero Visual Showcase Card --}}
-                <div class="relative max-w-md w-full mx-auto lg:mx-0 lg:justify-self-end">
-                    <div class="absolute -top-3 -left-3 w-24 h-24 rounded-2xl bg-[#E8F0E9] -z-10" aria-hidden="true"></div>
-                    <div class="absolute -bottom-3 -right-3 w-28 h-28 rounded-2xl bg-[#FFF4D6] -z-10" aria-hidden="true"></div>
-
-                    <div class="bg-white rounded-2xl border border-[#E8E2D6] p-4 sm:p-5 shadow-[0_12px_32px_rgba(46,83,57,0.08)]">
-                        <div class="relative overflow-hidden rounded-xl border border-[#E8E2D6]">
-                            <img src="/images/landing/hero-harvest.jpg" alt="Fresh farm produce harvest basket" class="w-full h-52 object-cover" />
-                            <div class="absolute top-3 left-3">
-                                <span class="px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-sm border border-[#E8E2D6] text-[11px] font-semibold text-[#8A6A0A] shadow-sm">
-                                    Harvested Today
-                                </span>
-                            </div>
-                            <div class="absolute top-3 right-3">
-                                <span class="px-2.5 py-1 rounded-full bg-[#2E5339] text-white text-[11px] font-semibold shadow-sm">
-                                    Direct Farm Origin
-                                </span>
-                            </div>
+                {{-- Hero Visual Showcase --}}
+                <div class="lg:col-span-5 w-full">
+                    <div class="bg-white rounded-3xl border border-[#E8E2D6] overflow-hidden shadow-[0_20px_45px_rgba(46,83,57,0.1)] transition hover:shadow-[0_24px_50px_rgba(46,83,57,0.14)]">
+                        <div class="relative overflow-hidden aspect-[4/3]">
+                            <img src="/images/landing/hero-harvest.jpg" alt="Fresh farm produce harvest basket" class="w-full h-full object-cover" />
                         </div>
 
-                        <div class="mt-4">
-                            <div class="flex items-start justify-between gap-2">
+                        <div class="p-5 sm:p-6">
+                            <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <h3 class="font-semibold text-base text-[#1A1A1A]">Crisp Highland Greens &amp; Veggies</h3>
-                                    <p class="text-xs text-[#5C5C5C] mt-0.5">Freshly cut early morning · Benguet Cooperative</p>
+                                    <span class="text-[11px] font-semibold uppercase tracking-wider text-[#4A7C59]">Fresh Morning Harvest</span>
+                                    <h3 class="font-semibold text-base sm:text-lg text-[#1A1A1A] mt-0.5">Highland Greens &amp; Seasonal Picks</h3>
+                                    <p class="text-xs text-[#5C5C5C] mt-1">Harvested 05:30 AM · Benguet Agrarian Co-op</p>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <span class="text-lg font-bold text-[#2E5339]">₱35.00</span>
-                                    <span class="block text-[11px] text-[#8A8A8A] font-medium">/ kg avg</span>
+                                    <div class="text-xl font-bold text-[#2E5339]">₱35<span class="text-xs font-normal text-[#5C5C5C]">/kg</span></div>
+                                    <span class="text-[11px] text-[#5C5C5C]">Direct from Grower</span>
                                 </div>
                             </div>
 
-                            <div class="mt-4 pt-3 border-t border-[#E8E2D6] flex items-center justify-between">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <img src="/images/landing/farmer-avatar.jpg" alt="Farmer Danilo" class="w-8 h-8 rounded-full object-cover border border-[#E8E2D6]" />
-                                    <div class="min-w-0">
-                                        <span class="block text-xs font-semibold text-[#1A1A1A] truncate">Mang Danilo</span>
-                                        <span class="block text-[10px] text-[#5C5C5C] truncate">Benguet Co-op</span>
-                                    </div>
-                                </div>
-                                <span class="px-2 py-0.5 rounded-full bg-[#E8F0E9] text-[#2E5339] text-[11px] font-semibold whitespace-nowrap">
-                                    ✓ Verified Farm
-                                </span>
-                            </div>
-
-                            <a href="/shop" class="mt-4 w-full h-10 rounded-xl bg-[#2E5339] text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-[#24412D] transition shadow-sm">
+                            <a href="/shop" class="mt-5 w-full h-11 rounded-2xl bg-[#2E5339] text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-[#24412D] transition shadow-sm">
                                 View Available Harvests →
                             </a>
                         </div>
