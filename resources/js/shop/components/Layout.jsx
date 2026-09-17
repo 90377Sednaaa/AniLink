@@ -111,122 +111,138 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen bg-[#FAF8F3] flex flex-col text-[#1A1A1A]">
-      <header className="bg-[#2E5339] text-white sticky top-0 z-30 shadow-[0_2px_14px_rgba(46,83,57,0.22)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-[#E8E2D6]/80 transition-all duration-300 shadow-[0_4px_20px_rgba(46,83,57,0.03)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-3 sm:gap-4">
           {/* Brand Logo - Far Left */}
-          <Link to="/" className="flex items-center gap-2.5 shrink-0 hover:opacity-95 transition">
-            <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-8 h-8 rounded-xl shadow-sm shrink-0" />
-            <span className="flex flex-col justify-center leading-tight">
-              <span className="block font-semibold text-base text-white tracking-tight">AniMarket</span>
-              <span className="block text-[10px] text-white/70 tracking-wide uppercase font-medium">Farm-Direct</span>
-            </span>
+          <Link to="/" className="flex items-center gap-3 shrink-0 group hover:opacity-95 transition">
+            <div className="w-10 h-10 rounded-2xl bg-[#E8F0E9] border border-[#2E5339]/15 flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition duration-200">
+              <img src="/apple-touch-icon-180.png" alt="AniMarket" className="w-full h-full object-contain" />
+            </div>
+            <div className="flex flex-col justify-center leading-none">
+              <span className="block font-extrabold text-lg sm:text-xl text-[#1A1A1A] tracking-tight group-hover:text-[#2E5339] transition">
+                AniMarket
+              </span>
+              <span className="block text-[10px] sm:text-[11px] font-bold text-[#2E5339] tracking-wider uppercase mt-1">
+                Farm-Direct
+              </span>
+            </div>
           </Link>
 
           {/* Right Navigation */}
-          <nav className="flex items-center gap-1.5 sm:gap-2">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition ${
-                  isActive ? 'bg-white text-[#2E5339] font-semibold shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-white'
-                }`
-              }
-            >
-              Market
-            </NavLink>
+          <nav className="flex items-center gap-2 sm:gap-3">
+            {/* Segmented Floating Pill Nav */}
+            <div className="flex items-center bg-[#F4F1EA] p-1 rounded-full border border-[#E8E2D6] shadow-inner">
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  `px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition flex items-center gap-1.5 ${
+                    isActive
+                      ? 'bg-[#2E5339] text-white shadow-sm'
+                      : 'text-[#4B5563] hover:text-[#1A1A1A] hover:bg-white/60'
+                  }`
+                }
+              >
+                <Icon name="sprout" className="w-3.5 h-3.5" />
+                <span>Market</span>
+              </NavLink>
 
-            {user ? (
-              <>
+              {user && (
                 <NavLink
                   to="/orders"
                   className={({ isActive }) =>
-                    `px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition hidden sm:inline-block ${
-                      isActive ? 'bg-white text-[#2E5339] font-semibold shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    `px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition flex items-center gap-1.5 ${
+                      isActive
+                        ? 'bg-[#2E5339] text-white shadow-sm'
+                        : 'text-[#4B5563] hover:text-[#1A1A1A] hover:bg-white/60'
                     }`
                   }
                 >
-                  My Orders
+                  <Icon name="orders" className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">My Orders</span>
+                  <span className="sm:hidden">Orders</span>
                 </NavLink>
+              )}
+            </div>
 
-                <Link
-                  to="/notifications"
-                  className="relative w-9 h-9 rounded-full flex items-center justify-center text-white/80 hover:bg-white/15 hover:text-white transition"
-                  title="Notifications"
-                >
-                  <Icon name="bell" className="w-4 h-4" />
-                  {!!unread?.count && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#D4A017] text-[#1A1A1A] text-[10px] font-bold flex items-center justify-center shadow-sm">
-                      {unread.count > 9 ? '9+' : unread.count}
-                    </span>
-                  )}
-                </Link>
+            {/* Notifications Bell (for authenticated users) */}
+            {user && (
+              <Link
+                to="/notifications"
+                className="relative w-10 h-10 rounded-full flex items-center justify-center border border-[#E8E2D6] bg-white text-[#4B5563] hover:text-[#2E5339] hover:border-[#2E5339]/40 hover:bg-[#FAF8F3] transition shadow-sm active:scale-95"
+                title="Notifications"
+              >
+                <Icon name="bell" className="w-4 h-4" />
+                {!!unread?.count && (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#D4A017] text-[#1A1A1A] text-[10px] font-black flex items-center justify-center shadow-sm ring-2 ring-white">
+                    {unread.count > 9 ? '9+' : unread.count}
+                  </span>
+                )}
+              </Link>
+            )}
 
-                <Link
-                  to="/cart"
-                  className="relative flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition"
-                  title="View shopping basket"
-                >
-                  <Icon name="cart" className="w-4 h-4" />
-                  <span className="hidden sm:inline">Basket</span>
-                  {count > 0 && (
-                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#D4A017] text-[#1A1A1A] text-[10px] font-bold flex items-center justify-center shadow-sm">
-                      {count > 9 ? '9+' : count}
-                    </span>
-                  )}
-                </Link>
+            {/* Shopping Basket Button */}
+            <Link
+              to="/cart"
+              className="relative flex items-center gap-2 h-10 px-3.5 sm:px-4 rounded-full border border-[#E8E2D6] bg-white hover:border-[#2E5339]/40 hover:bg-[#FAF8F3] text-[#1A1A1A] text-xs sm:text-sm font-bold transition shadow-sm active:scale-95 group"
+              title="View shopping basket"
+            >
+              <span className="text-[#2E5339] group-hover:scale-110 transition">
+                <Icon name="cart" className="w-4 h-4" />
+              </span>
+              <span className="hidden md:inline">Basket</span>
+              {count > 0 ? (
+                <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-[#D4A017] text-[#1A1A1A] text-[11px] font-black flex items-center justify-center shadow-sm">
+                  {count > 9 ? '9+' : count}
+                </span>
+              ) : (
+                <span className="hidden sm:inline text-xs font-semibold text-[#8A8A8A]">0</span>
+              )}
+            </Link>
 
-                <div className="hidden md:flex items-center gap-2.5 pl-3 ml-1 border-l border-white/20">
-                  <div className="text-right leading-none">
-                    <div className="text-xs font-semibold text-white truncate max-w-[120px]">{user.name}</div>
-                    <div className="text-[10px] text-white/70 mt-0.5">
+            {/* User Profile / Auth State */}
+            {user ? (
+              <div className="hidden lg:flex items-center gap-2.5 pl-2.5 ml-1 border-l border-[#E8E2D6]">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-[#E8F0E9] border border-[#2E5339]/20 text-[#2E5339] font-extrabold text-xs flex items-center justify-center shadow-sm">
+                    {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <div className="text-left leading-none">
+                    <div className="text-xs font-bold text-[#1A1A1A] truncate max-w-[110px]">{user.name}</div>
+                    <div className="text-[10px] font-semibold text-[#2E5339] mt-0.5 uppercase tracking-wide">
                       {user.role === 'buyer_business' ? 'B2B Buyer' : user.role === 'admin' ? 'Admin' : 'Buyer'}
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      logout()
-                      navgo('/')
-                    }}
-                    className="text-xs px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition border border-white/15"
-                  >
-                    Log out
-                  </button>
                 </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/cart"
-                  className="relative flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition"
-                  title="View shopping basket"
+                <button
+                  onClick={() => {
+                    logout()
+                    navgo('/')
+                  }}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full border border-[#E8E2D6] text-[#4B5563] hover:text-[#B0413E] hover:border-[#B0413E]/40 hover:bg-[#FDF2F2] transition"
+                  title="Sign out of your account"
                 >
-                  <Icon name="cart" className="w-4 h-4" />
-                  {count > 0 && (
-                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#D4A017] text-[#1A1A1A] text-[10px] font-bold flex items-center justify-center shadow-sm">
-                      {count > 9 ? '9+' : count}
-                    </span>
-                  )}
-                </Link>
-
-                <Link
-                  to="/login"
-                  className="px-4 py-1.5 rounded-full bg-[#D4A017] text-[#1A1A1A] text-xs sm:text-sm font-semibold hover:brightness-105 transition shadow-sm"
-                >
-                  Sign In
-                </Link>
+                  Log out
+                </button>
               </div>
+            ) : (
+              <Link
+                to="/login"
+                className="h-10 px-4 sm:px-5 rounded-full bg-[#2E5339] text-white text-xs sm:text-sm font-bold hover:bg-[#24412D] transition shadow-sm hover:shadow-md flex items-center justify-center active:scale-95"
+              >
+                Sign In
+              </Link>
             )}
 
-            {/* Repositioned AniLink Home - Right Nav */}
+            {/* Return to AniLink Home */}
             <a
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 shrink-0 ml-1"
+              className="inline-flex items-center gap-1.5 h-10 px-3 sm:px-3.5 rounded-full border border-[#E8E2D6] bg-[#FAF8F3] hover:bg-white hover:border-[#2E5339]/40 text-xs sm:text-sm font-semibold text-[#4B5563] hover:text-[#2E5339] transition shadow-sm ml-0.5 sm:ml-1 shrink-0"
               title="Return to AniLink Home"
             >
               <span>←</span>
-              <span className="hidden md:inline">AniLink Home</span>
-              <span className="md:hidden">Home</span>
+              <span className="hidden sm:inline">AniLink Home</span>
+              <span className="sm:hidden">Home</span>
             </a>
           </nav>
         </div>
