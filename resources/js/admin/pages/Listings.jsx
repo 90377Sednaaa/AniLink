@@ -101,7 +101,7 @@ export default function Listings() {
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl">
             <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-[#FAF8F3]">
-              <Icon name={showConfirm.action === 'archived' ? 'archive' : 'refresh'} className="w-6 h-6 text-[#1A1A1A]" />
+              <Icon name={showConfirm.action === 'archived' ? 'trash' : 'refresh'} className="w-6 h-6 text-[#1A1A1A]" />
             </div>
             <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">
               {showConfirm.action === 'archived' ? 'Archive this listing?' : 'Restore this listing?'}
